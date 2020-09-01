@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <?php $this->load->view("_partials/head.php") ?>
+</head>
+<body id="page-top">
+
+
+
+    <div id="wrapper">
+    <?php $this->load->view("_partials/sidebar.php") ?>
+
+        <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+          <?php $this->load->view("_partials/navbar.php") ?>
+          <div class="container-fluid">
+                <div class="row">
+                    
+                    <!-- Total Data Ganda -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Data Ganda</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo number_format($total_data[0]->jml);?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-tasks fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Total Data Clean -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">DATA STATUS CLEAN</div>
+                                        <?php
+                                          $clean = $data_clean[0]->jml;
+                                          $totaldata = $total_data[0]->jml;
+                                          $persen_clean = ($clean/$totaldata)*100;                            
+                                        ?>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo number_format($data_clean[0]->jml);?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-cloud fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-auto">
+                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><?php echo number_format($persen_clean)."%";?></div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="progress progress-sm mr-2">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $persen_clean;?>%" aria-valuenow="<?php echo $persen_clean;?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>                            
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Data Unclean -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">DATA STATUS UNCLEAN</div>
+                                        <?php
+                                          $unclean = $data_unclean[0]->jml;
+                                          $totaldata = $total_data[0]->jml;
+                                          $persen_unclean = ($unclean/$totaldata)*100;                            
+                                        ?>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo number_format($data_unclean[0]->jml);?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-compress fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-auto">
+                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><?php echo number_format($persen_unclean)."%";?></div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="progress progress-sm mr-2">
+                                            <div class="progress-bar bg-warning" role="progressbar" style="width: <?php echo $persen_unclean;?>%" aria-valuenow="<?php echo $persen_unclean;?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>                            
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Data Non Aktif -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">DATA STATUS NON AKTIF</div>
+                                        <?php
+                                          $nonaktif = $data_nonaktif[0]->jml;
+                                          $totaldata = $total_data[0]->jml;
+                                          $persen_nonaktif = ($nonaktif/$totaldata)*100;                            
+                                        ?>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><?php echo number_format($nonaktif);?></div>
+                                    </div>
+                                    <div class="col-auto">
+                                      <i class="fas fa-archive fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col-auto">
+                                        <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><?php echo number_format($persen_nonaktif)."%";?></div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="progress progress-sm mr-2">
+                                            <div class="progress-bar bg-danger" role="progressbar" style="width: <?php echo $persen_nonaktif;?>%" aria-valuenow="<?php echo $persen_nonaktif;?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>                            
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    
+                    
+                    <div class="row">
+                        <div class="col-xl-12">                        
+                            <!-- Bar Chart -->
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Total Data Ganda Per Provinsi</h6>
+                                </div>
+                                <div class="card-body">
+                                <div class="chart-bar">
+                                <canvas id="myBarChart"></canvas>
+                                </div>                                
+                                </div>
+                            </div>
+                        </div>
+                    </div>   
+                    
+                    <div class="row">
+                        <div class="col-xl-6">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Status Data Clean Per Propinsi</h6>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-pie pt-4">
+                                      <canvas id="myPieChart1"></canvas>
+                                    </div>                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Status Data Unclean Per Propinsi</h6>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-pie pt-4">
+                                      <canvas id="myPieChart2"></canvas>
+                                    </div>                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-6">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Status Data Non Aktif Per Propinsi</h6>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="chart-pie pt-4">
+                                      <canvas id="myPieChart3"></canvas>
+                                    </div>                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                
+                <!-- Content Row -->
+          </div>
+      </div>
+      <!-- Sticky Footer -->
+        <?php $this->load->view("_partials/footer.php") ?>
+    </div>
+    <?php        
+        $nmProvinsi = "";
+        $jmlData = "";
+        foreach($totalperprop as $provinsi){
+            $nmProvinsi .= "'".$provinsi->NMPROP."', ";
+            $jmlData .= $provinsi->jml.", ";
+        }
+        
+        $nmProvinsiCln = "";
+        $jmlDataCln = "";
+        foreach($cleanperprop as $cleanprovinsi){
+            $nmProvinsiCln .= "'".$cleanprovinsi->NMPROP."', ";
+            $jmlDataCln .= $cleanprovinsi->jml.", ";
+        }
+        
+        $nmProvinsiUnCln = "";
+        $jmlDataUnCln = "";
+        foreach($uncleanperprop as $uncleanprovinsi){
+            $nmProvinsiUnCln .= "'".$uncleanprovinsi->NMPROP."', ";
+            $jmlDataUnCln .= $uncleanprovinsi->jml.", ";
+        }
+        
+        $nmProvinsiNonAktif = "";
+        $jmlDataNonAktif = "";
+        foreach($nonaktifperprop as $nonaktifperprovinsi){
+            $nmProvinsiNonAktif .= "'".$nonaktifperprovinsi->NMPROP."', ";
+            $jmlDataNonAktif .= $nonaktifperprovinsi->jml.", ";
+        }
+    ?>
+    
+    <?php $this->load->view("_partials/scrolltop.php") ?>
+    <?php $this->load->view("_partials/modal.php") ?>
+    <?php $this->load->view("_partials/js.php") ?>
+    <script>
+        // Set new default font family and font color to mimic Bootstrap's default styling
+        Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+        Chart.defaults.global.defaultFontColor = '#858796';
+
+        function number_format(number, decimals, dec_point, thousands_sep) {
+            // *     example: number_format(1234.56, 2, ',', ' ');
+            // *     return: '1 234,56'
+            number = (number + '').replace(',', '').replace(' ', '');
+            var n = !isFinite(+number) ? 0 : +number,
+            prec = !isFinite(+decimals) ? 0 : Math.abs(decimals),
+            sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep,
+            dec = (typeof dec_point === 'undefined') ? '.' : dec_point,
+            s = '',
+            toFixedFix = function(n, prec) {
+                var k = Math.pow(10, prec);
+                return '' + Math.round(n * k) / k;
+            };
+            // Fix for IE parseFloat(0.55).toFixed(0) = 0;
+            s = (prec ? toFixedFix(n, prec) : '' + Math.round(n)).split('.');
+            if (s[0].length > 3) {
+                s[0] = s[0].replace(/\B(?=(?:\d{3})+(?!\d))/g, sep);
+            }
+            if ((s[1] || '').length < prec) {
+                s[1] = s[1] || '';
+                s[1] += new Array(prec - s[1].length + 1).join('0');
+            }
+            return s.join(dec);
+        }
+
+        // Bar Chart Example
+        var ctx = document.getElementById("myBarChart");
+        var myBarChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [<?php echo $nmProvinsi;?>],
+                datasets: [{
+                    label: "Total Data",
+                    backgroundColor: "#4e73df",
+                    hoverBackgroundColor: "#2e59d9",
+                    borderColor: "#4e73df",
+                    data: [<?php echo $jmlData;?>],
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        left: 10,
+                        right: 25,
+                        top: 10,
+                        bottom: 0,
+                    }
+                },
+                scales: {
+                    xAxes: [{
+                    time: {
+                        unit: 'month'
+                    },
+                    gridLines: {
+                        display: false,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        maxTicksLimit: 27
+                    },
+                    maxBarThickness: 25,
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                            max: 150000,
+                            maxTicksLimit: 6,
+                            padding: 5,
+                            callback: function(value, index, values) {
+                                return number_format(value);
+                            }
+                        },
+                        gridLines: {
+                            color: "rgb(234, 236, 244)",
+                            zeroLineColor: "rgb(234, 236, 244)",
+                            drawBorder: false,
+                            borderDash: [2],
+                            zeroLineBorderDash: [2]
+                        }
+                    }],
+                },
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    titleMarginBottom: 10,
+                    titleFontColor: '#6e707e',
+                    titleFontSize: 14,
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10,
+                    callbacks: {
+                        label: function(tooltipItem, chart) {
+                            var datasetLabel = chart.datasets[tooltipItem.datasetIndex].label || '';
+                            return datasetLabel + ': ' + number_format(tooltipItem.yLabel);
+                        }
+                    }
+                },
+            }
+        });
+        
+        var ctx = document.getElementById("myPieChart1");
+        var myPieChart1 = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [<?php echo $nmProvinsiCln;?>],
+                datasets: [{
+                    data: [<?php echo $jmlDataCln;?>],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#35b7ac', '#46f5ec', '#32b31c', '#21b2ec', '#52b8fc', '#32e91c', '#14b21c', '#10d2hc'],
+                    hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10,
+                },
+                legend: {
+                    display: true
+                },
+                cutoutPercentage: 50,
+            },
+        });
+        
+        var ctx = document.getElementById("myPieChart2");
+        var myPieChart2 = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [<?php echo $nmProvinsiUnCln;?>],
+                datasets: [{
+                    data: [<?php echo $jmlDataUnCln;?>],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#35b7ac', '#46f5ec', '#32b31c', '#21b2ec', '#52b8fc', '#32e91c', '#14b21c', '#10d2hc'],
+                    hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10,
+                },
+                legend: {
+                    display: true
+                },
+                cutoutPercentage: 50,
+            },
+        });
+        
+        var ctx = document.getElementById("myPieChart3");
+        var myPieChart3 = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: [<?php echo $nmProvinsiNonAktif;?>],
+                datasets: [{
+                    data: [<?php echo $jmlDataNonAktif;?>],
+                    backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#35b7ac', '#46f5ec', '#32b31c', '#21b2ec', '#52b8fc', '#32e91c', '#14b21c', '#10d2hc'],
+                    hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+                    hoverBorderColor: "rgba(234, 236, 244, 1)",
+                }],
+            },
+            options: {
+                maintainAspectRatio: false,
+                tooltips: {
+                    backgroundColor: "rgb(255,255,255)",
+                    bodyFontColor: "#858796",
+                    borderColor: '#dddfeb',
+                    borderWidth: 1,
+                    xPadding: 15,
+                    yPadding: 15,
+                    displayColors: false,
+                    caretPadding: 10,
+                },
+                legend: {
+                    display: true
+                },
+                cutoutPercentage: 50,
+            },
+        });
+
+    </script>
+</body>
+</html>
