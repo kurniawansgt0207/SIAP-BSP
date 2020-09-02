@@ -2,7 +2,7 @@
     Class Model_transaksi extends CI_Model
     {
         function showData($param1="",$param2="",$param3="",$param4="",$param5="",$param6="",$param7=""){
-            $this->db->select('*');
+            /*$this->db->select('*');
             $this->db->from('data_ganda');
             if($param1!=''){
                 $this->db->where('NMPROP',$param1);
@@ -28,7 +28,19 @@
             $this->db->order_by('NOKK_DTKS, IDARTBDT','ASC');            
             $this->db->limit(500);
             
-            $query = $this->db->get();
+            $query = $this->db->get();*/
+            
+            $sql = "SELECT TOP 10000 * FROM data_ganda WHERE NAMA_PENERIMA != ''";
+            $sql .= ($param1 != '') ? " AND NMPROP='".$param1."' " : "";
+            $sql .= ($param2 != '') ? " AND NMKAB='".$param2."' " : "";
+            $sql .= ($param3 != '') ? " AND NMKEC='".$param3."' " : "";
+            $sql .= ($param4 != '') ? " AND NMKELP='".$param4."' " : "";
+            $sql .= ($param5 != '') ? " AND KET_TAMBAHAN='".$param5."' " : "";
+            $sql .= ($param6 != '') ? " AND NIK_KTP LIKE '%".$param6."'% " : "";
+            $sql .= ($param7 != '') ? " AND NAMA_PENERIMA LIKE '%".$param7."'% " : "";
+            $sql .= " ORDER BY NOKK_DTKS,IDARTBDT ASC";
+            echo $sql;
+            $query = $this->db->query($sql);
             return $query;
         }
         
