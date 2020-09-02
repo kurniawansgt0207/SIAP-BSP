@@ -25,6 +25,7 @@
             if($param7!=''){
                 $this->db->like('NAMA_PENERIMA',$param7);
             }
+            $this->db->order_by('NOKK_DTKS, IDARTBDT','ASC');            
             $this->db->limit(500);
             
             $query = $this->db->get();
@@ -95,6 +96,36 @@
             WHERE a.KET_TAMBAHAN='NONAKTIF'
             GROUP BY a.NMPROP
             ) aa GROUP BY NMPROP;";
+            $query = $this->db->query($sql);
+            return $query;
+        }
+        
+        function rekap_data_prop_kab($prop,$kab){
+            $sql = "SELECT NMPROP,NMKAB,SUM(total_data) total_data,SUM(jml_clean) jml_clean,SUM(jml_unclean) jml_unclean,
+            SUM(jml_nonaktif) jml_nonaktif
+            FROM
+            (            
+            SELECT a.NMPROP,a.NMKAB,0 total_data,COUNT(a.IDARTBDT) jml_clean,0 jml_unclean,0 jml_nonaktif 
+            FROM data_ganda a 
+            WHERE a.NMPROP='".$prop."' AND a.NMKAB='".$kab."' AND a.KET_TAMBAHAN='CLEAN'
+            GROUP BY a.NMPROP,a.NMKAB
+            UNION ALL
+            SELECT a.NMPROP,a.NMKAB,0 total_data,0 jml_clean,COUNT(a.IDARTBDT) jml_unclean,0 jml_nonaktif 
+            FROM data_ganda a 
+            WHERE a.NMPROP='".$prop."' AND a.NMKAB='".$kab."' AND a.KET_TAMBAHAN='UNCLEAN'
+            GROUP BY a.NMPROP,a.NMKAB
+            UNION ALL
+            SELECT a.NMPROP,a.NMKAB,0 total_data,0 jml_clean,0 jml_unclean,COUNT(a.IDARTBDT) jml_nonaktif 
+            FROM data_ganda a 
+            WHERE a.NMPROP='".$prop."' AND a.NMKAB='".$kab."' AND a.KET_TAMBAHAN='NONAKTIF'
+            GROUP BY a.NMPROP,a.NMKAB
+            ) aa GROUP BY aa.NMPROP,aa.NMKAB;";
+            $query = $this->db->query($sql);
+            return $query;
+        }
+        
+        function update_status($id,$status){
+            $sql = "UPDATE data_ganda SET KET_TAMBAHAN='".$status."' WHERE IDARTBDT='".$id."'";
             $query = $this->db->query($sql);
             return $query;
         }

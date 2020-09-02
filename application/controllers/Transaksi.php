@@ -41,6 +41,19 @@
             $result['kelurahan'] = $this->Model_transaksi->getKelDesa($kec)->result();
             $this->load->view('transaksi/v_kel_list', $result);
         }
+        
+        function update_status(){
+            $postData = $this->input->post();
+            
+            $this->Model_transaksi->update_status($postData['id'],$postData['status']);
+            $hasil = $this->Model_transaksi->rekap_data_prop_kab($postData['prop'],$postData['kab'])->result();
+            $jmlClean = $hasil[0]->jml_clean;
+            $jmlUnClean = $hasil[0]->jml_unclean;
+            $jmlNonAktif = $hasil[0]->jml_nonaktif;
+            echo "Data berhasil di update~Propinsi: ".$postData['prop']."\nKabupate/Kota: ".$postData['kab']."\nClean: ".$jmlClean."\nUnclean: ".$jmlUnClean."\nNon Aktif: ".$jmlNonAktif;
+            
+            
+        }
                         
         function rubah_data_ganda($id){
             $data['menu'] = "transaksi";

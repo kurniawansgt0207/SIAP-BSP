@@ -158,6 +158,7 @@
     <?php $this->load->view("_partials/js.php") ?>
     <script>                
         //$("#list_data_ganda").load("<?php echo base_url()?>transaksi/list_data");
+        
     </script>
 </body>
 </html>

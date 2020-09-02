@@ -177,7 +177,27 @@
                 }   
 
             }); 
-        }                
+        }      
+        
+        function updatestatus(id,status,prop,kab){
+            var url = "<?php echo base_url();?>transaksi/update_status";                        
+            
+            $.ajax({
+                type:"POST",
+                data:{id:id,status:status,prop:prop,kab:kab},
+                url:url,
+                success:function(data){ 
+                    if(data){
+                        var pesan = data.split('~');                        
+                        //$('#hasil'+id).html(pesan[0]); 
+                        alert(pesan[0]+"\n\n"+pesan[1]);
+                        document.getElementById('nonaktif'+id).innerHTML = "";
+                        document.getElementById('clean'+id).innerHTML = "";
+                    }
+                }   
+
+            }); 
+        }
     </script>
 <!--    <script src="<?php echo base_url()?>assets/js/select2.js"></script>
     <script>                
