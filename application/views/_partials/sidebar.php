@@ -37,6 +37,18 @@
             <span>Filter Data Ganda</span>
         </a>
     </li>
+    <li class="nav-item <?php if($menu=="download" || $menu=="upload") echo "active";?>">
+        <a class="nav-link <?php if($menu!="download" && $menu!="upload") echo "collapsed";?>" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="<?php if($menu=="laporan" && $menu=="summary") echo "false"; else echo "true";?>" aria-controls="collapseTwo">
+            <i class="fas fa-fw fa-file"></i>
+            <span>Surat Permohonan</span>
+        </a>
+        <div id="collapseTwo" class="<?php if($menu=="download" || $menu=="upload") echo "collapse show"; else echo "collapse";?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">            
+                <a class="collapse-item" href="<?php echo base_url();?>transaksi/download_surat">Unduh Template</a>
+                <a class="collapse-item" href="<?php echo base_url();?>transaksi/upload_surat">Unggah Permohonan</a>
+            </div>
+        </div>
+    </li>
     
     <!-- Divider -->
     <hr class="sidebar-divider">

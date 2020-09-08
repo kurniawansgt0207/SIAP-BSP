@@ -174,6 +174,66 @@
             }
             $pdf->Output();
         }
+        
+        function surat_permohonan(){
+            $data['menu'] = "surat_permohonan";
+            $data['provinsi'] = $this->Model_transaksi->getProvinsi()->result();
+            $this->load->view('transaksi/template_surat_permohonan',$data);
+        }
+        
+        function submit_surat_permohonan(){
+            $tgl_permohonan = $this->input->post('tgl_permohonan');
+            $nama_pemohon = $this->input->post('nama_pemohon');
+            $nip_pemohon = $this->input->post('nip_pemohon');
+            $provinsi = $this->input->post('provinsi');
+            $kab_kota = $this->input->post('kab_kota');
+            $kecamatan = $this->input->post('kecamatan');
+            $kel_desa = $this->input->post('kel_desa');
+            $jml_clean = $this->input->post('jml_clean');
+            $jml_unclean = $this->input->post('jml_unclean');
+            $jml_nonaktif = $this->input->post('jml_nonaktif');
+            
+            $data = array(
+                'tgl_permohonan' => $tgl_permohonan,
+                'nama_pemohon' => $nama_pemohon,
+                'nip_pemohon' => $nip_pemohon,
+                'nm_provinsi' => $provinsi,
+                'nm_kabupaten' => $kab_kota,
+                'nm_kecamatan' => $kecamatan,
+                'nm_kelurahan' => $kel_desa,
+                'jml_clean' => $jml_clean,
+                'jml_unclean' => $jml_unclean,
+                'jml_nonaktif' => $jml_nonaktif,
+            );
+
+            $insertID = $this->Model_transaksi->submit_surat_permohonan($data);
+            
+            $this->view_surat_permohonan($insertID);
+        }
+        
+        function view_surat_permohonan($idData){            
+            $this->load->view('transaksi/surat_permohonan_view',$idData);
+        }
+        
+        function download_surat(){
+            $data['menu'] = "download";
+            $this->load->view('transaksi/surat_permohonan_view', $data);
+        }
+        
+        function upload_surat(){
+            $data['menu'] = "upload";
+            $this->load->view('transaksi/surat_permohonan_upload', $data);
+        }
+        
+        function submit_upload_surat(){
+            $insert = $this->Model_transaksi->submit_unggah_surat();
+            if($insert > 0){
+                $this->session->set_flashdata('pesan', 'Dokumen Berhasil Terikirim');
+            } else {
+                $this->session->set_flashdata('pesan', 'Dokumen Tidak Berhasil Terikirim');
+            }
+            redirect('transaksi/upload_surat');
+        }
     }
     
 ?>

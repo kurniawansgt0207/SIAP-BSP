@@ -141,5 +141,15 @@
             $query = $this->db->query($sql);
             return $query;
         }
+        
+        function submit_surat_permohonan($data){
+            $this->db->insert('surat_permohonan', $data);
+            $insert_id = $this->db->insert_id();
+            return $insert_id;
+        }
+        
+        function submit_unggah_surat(){
+            return 1;
+        }
     }
 ?>
