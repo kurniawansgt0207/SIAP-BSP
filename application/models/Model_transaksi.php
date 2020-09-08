@@ -148,8 +148,11 @@
             return $insert_id;
         }
         
-        function submit_unggah_surat(){
-            return 1;
+        function submit_unggah_surat($data){
+            $this->db->insert('surat_permohonan_data_ganda', $data);
+            $insert_id = $this->db->insert_id();
+            return $insert_id;
         }
+                
     }
 ?>

@@ -222,11 +222,45 @@
         
         function upload_surat(){
             $data['menu'] = "upload";
+            $data['provinsi'] = $this->Model_transaksi->getProvinsi()->result();
             $this->load->view('transaksi/surat_permohonan_upload', $data);
         }
         
         function submit_upload_surat(){
-            $insert = $this->Model_transaksi->submit_unggah_surat();
+            $tgl_permohonan = date("Y-m-d");
+            $provinsi = $this->input->post('provinsi');
+            $kab_kota = $this->input->post('kab_kotax');
+            $nm_surat_permohonan = $this->input->post('surat_permohonan');
+            $nm_lampiran_dokumen = $this->input->post('lampiran_dokumen');
+            
+            
+            $config['upload_path'] = './uploads/';
+            $config['allowed_types'] = 'pdf';
+            
+            $this->load->library('upload', $config);
+            
+            $this->upload->do_upload('surat_permohonan');
+            $result1 = $this->upload->data();
+            
+            $this->upload->do_upload('lampiran_dokumen');
+            $result2 = $this->upload->data();
+            
+            
+            $result = array('surat_permohonan'=>$result1,'lampiran_dokumen'=>$result2);
+            
+            $data = array(
+                'tgl_permohonan' => $tgl_permohonan,
+                'nm_pemohon' => 'Sigit Kurniawan',
+                'nm_propinsi' => $provinsi,
+                'nm_kabupaten' => $kab_kota,
+                'nm_surat_permohonan' => $result['surat_permohonan']['file_name'],
+                'nm_lampiran_dokumen' => $result['lampiran_dokumen']['file_name'],
+                'status_permohonan' => 'Open',
+                'nm_pengecek' => '',
+                'alasan_tolak' => '',
+            );
+        
+            $insert = $this->Model_transaksi->submit_unggah_surat($data);
             if($insert > 0){
                 $this->session->set_flashdata('pesan', 'Dokumen Berhasil Terikirim');
             } else {

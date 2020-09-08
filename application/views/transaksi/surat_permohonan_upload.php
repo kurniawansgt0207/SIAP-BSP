@@ -23,15 +23,34 @@
                         
                         <div class="card-body p-4" style="margin-top:-35px">
                             <div class="row">
-                                <div class="col-lg-12">                                    
+                                <div class="col-lg-8">                                    
                                     <div class="p-4">
                                     <div class="text-info text-center text-capitalize">
                                     <?php
                                         $message = $this->session->flashdata('pesan');
                                         echo $message;
+                                        echo form_open_multipart('transaksi/submit_upload_surat');
                                     ?>
                                     </div>
-                                        <form class="user" name="frmUploadSurat" enctype="multipart/form-data" action="<?php echo base_url();?>transaksi/submit_upload_surat">
+                                        <form class="user" name="frmUploadSurat" action="<?php echo base_url();?>transaksi/submit_upload_surat">
+                                            <div class="form-group">
+                                                <label>Provinsi</label>
+                                                <select name="provinsi" id="provinsi" class="form-control select1" onchange="list_of_kab()">  
+                                                    <option></option>
+                                                    <?php
+                                                        foreach($provinsi as $prov){
+                                                    ?>
+                                                    <option value="<?php echo $prov->NMPROVINSI;?>"><?php echo $prov->NMPROVINSI;?></option>
+                                                    <?php
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Kabupaten/Kota</label>      
+                                                <input type="hidden" name="kab_kotax" id="kab_kotax" value="">
+                                                <div id="list_kab">--Pilih Kabupaten/Kota--</div>                                               
+                                            </div>
                                             <div class="form-group">
                                                 <label>Unggah Surat Permohonan</label>
                                                 <input type="file" class="form-control" id="surat_permohonan" name="surat_permohonan" accept="application/pdf">
@@ -59,5 +78,28 @@
     <?php $this->load->view("_partials/modal.php") ?>
     <?php $this->load->view("_partials/js.php") ?>
     
+    <script>                
+        function list_of_kab(){
+            var prov = document.getElementById('provinsi').value;                        
+            var url = "<?php echo base_url()?>transaksi/list_of_kab";
+
+            $.ajax({
+                type:"POST",
+                data:{prov:prov},
+                url:url,
+                success:function(data){ 
+                     if(data){
+                     $('#list_kab').html(data); 
+                     }
+                }   
+
+            });            
+        }
+        
+        function list_of_kec(){
+            var kab = document.getElementById('kab_kota').value;
+            document.getElementById('kab_kotax').value = kab;            
+        }
+    </script>
 </body>
 </html>
