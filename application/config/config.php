@@ -24,7 +24,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 //$config['base_url'] = '';
-$config['base_url'] = 'http://localhost/SIAP-BSP';
+//$config['base_url'] = 'http://localhost/SIAP-BSP';
+$config['base_url'] = 'http://104.197.166.42/SIAP-BSP';
 //$config['base_url'] = 'https://cordova-media.com/SIAP-BSP';
 
 /*
