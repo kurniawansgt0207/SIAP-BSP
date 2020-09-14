@@ -51,8 +51,6 @@
             $jmlUnClean = $hasil[0]->jml_unclean;
             $jmlNonAktif = $hasil[0]->jml_nonaktif;
             echo "Data berhasil di update~Propinsi: ".$postData['prop']."\nKabupate/Kota: ".$postData['kab']."\nClean: ".$jmlClean."\nUnclean: ".$jmlUnClean."\nNon Aktif: ".$jmlNonAktif;
-            
-            
         }
                         
         function rubah_data_ganda($id){
@@ -267,6 +265,50 @@
                 $this->session->set_flashdata('pesan', 'Dokumen Tidak Berhasil Terikirim');
             }
             redirect('transaksi/upload_surat');
+        }
+        
+        function daftar_surat(){
+            $data['menu'] = "upload";
+            $data['provinsi'] = $this->Model_transaksi->getProvinsi()->result();
+            $this->load->view('transaksi/surat_permohonan_list', $data);
+        }
+        
+        function daftar_surat_list(){
+            $provinsi = $this->input->post('prov');
+            $kab_kota = $this->input->post('kab');
+            $data['list_data'] = $this->Model_transaksi->show_list_surat_permohonan($provinsi,$kab_kota)->result();
+            $this->load->view('transaksi/surat_permohonan_list_daftar', $data);
+        }
+        
+        function rubah_status_permohonan($id_surat){
+            $where = array('id' => $id_surat);
+            $data['data_surat'] = $this->Model_transaksi->showPermohonanById($where)->result();
+            $data['provinsi'] = $this->Model_transaksi->getProvinsi()->result();            
+            $prov = $data['data_surat'][0]->nm_propinsi;
+            $data['kab_kota'] = $this->Model_transaksi->getKabKota($prov)->result();
+            $kab = $data['data_surat'][0]->nm_kabupaten;
+            $this->load->view('transaksi/rubah_status_surat_permohonan_form', $data);
+        }
+        
+        function update_status_surat(){
+            $id_surat = $this->input->post('id_surat');
+            $status_opt = $this->input->post('status_surat');
+            $status_surat = ($status_opt==1) ? "Accepted" : "Rejected";
+            $alasan_tolak = $this->input->post('alasan_tolak');
+            $nm_pengcek = $this->input->post('nm_pengecek');
+            
+            $data = array(
+                'nm_pengecek' => $nm_pengcek,
+                'alasan_tolak' => $alasan_tolak,
+                'status_permohonan' => $status_surat
+            );
+
+            $where = array(
+                'id' => $id_surat
+            );
+
+            $this->Model_transaksi->update_data($where,$data,'surat_permohonan_data_ganda');
+            redirect('transaksi/daftar_surat');
         }
     }
     

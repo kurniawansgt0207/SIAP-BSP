@@ -154,5 +154,25 @@
             return $insert_id;
         }
                 
+        function show_list_surat_permohonan($prop,$kab){            
+            $sql = "SELECT * FROM surat_permohonan_data_ganda a ";
+            if($prop != "" && $kab == ""){
+                $sql .= "WHERE a.nm_propinsi='$prop'";
+            }
+            if($prop == "" && $kab != ""){
+                $sql .= "WHERE a.nm_kabupaten='$kab'";
+            }
+            if($prop != "" && $kab != ""){
+                $sql .= "WHERE a.nm_propinsi='$prop' AND a.nm_kabupaten='$kab'";
+            }
+            
+            $query = $this->db->query($sql);
+            return $query;
+        }
+        
+        function showPermohonanById($where){
+            return $this->db->get_where("surat_permohonan_data_ganda",$where);
+        }
+                
     }
 ?>
