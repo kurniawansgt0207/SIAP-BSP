@@ -37,16 +37,26 @@
             <span>Filter Data Ganda</span>
         </a>
     </li>
-    <li class="nav-item <?php if($menu=="download" || $menu=="upload") echo "active";?>">
-        <a class="nav-link <?php if($menu!="download" && $menu!="upload") echo "collapsed";?>" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="<?php if($menu=="laporan" && $menu=="summary") echo "false"; else echo "true";?>" aria-controls="collapseTwo">
+    <?php
+        $classActive_1 = ($menu=="download" || $menu=="upload") ? "active" : "";
+        $classActive_2 = ($menu=="laporan" || $menu=="summary") ? "active" : "";
+        $classCollapsed_1 = ($menu=="download" && $menu=="upload") ? "" : "collapsed";
+        $classCollapsed_2 = ($menu=="laporan" && $menu=="summary") ? "" : "collapsed";
+        $classExpand_1 = ($menu=="download" && $menu=="upload") ? "false" : "true";
+        $classExpand_2 = ($menu=="laporan" && $menu=="summary") ? "false" : "true";
+        $classCollapseShow_1 = ($menu=="download" || $menu=="upload") ? "collapse show" : "collapse";
+        $classCollapseShow_2 = ($menu=="laporan" || $menu=="summary") ? "collapse show" : "collapse";
+    ?>
+    <li class="nav-item <?php echo $classActive_1;?>">
+        <a class="nav-link <?php echo $classCollapsed_1;?>" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="<?php echo $classExpand_1;?>" aria-controls="collapseTwo">
             <i class="fas fa-fw fa-file"></i>
             <span>Surat Permohonan</span>
         </a>
-        <div id="collapseTwo" class="<?php if($menu=="download" || $menu=="upload") echo "collapse show"; else echo "collapse";?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div id="collapseTwo" class="<?php echo $classCollapseShow_1;?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">            
                 <a class="collapse-item" href="<?php echo base_url();?>transaksi/download_surat">Unduh Template</a>
                 <a class="collapse-item" href="<?php echo base_url();?>transaksi/upload_surat">Unggah Permohonan</a>
-                <a class="collapse-item" href="<?php echo base_url();?>transaksi/daftar_surat">Daftar Permohonan</a>
+                <a class="collapse-item" href="<?php echo base_url();?>transaksi/daftar_surat">Cek Permohonan</a>
             </div>
         </div>
     </li>
@@ -61,12 +71,12 @@
 
     <!-- Nav Item - Pages Collapse Menu -->
     
-    <li class="nav-item <?php if ($menu=="laporan" || $menu=="summary") echo "active";?>">
-        <a class="nav-link <?php if($menu!="laporan" && $menu!="summary") echo "collapsed";?>" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="<?php if($menu=="laporan" && $menu=="summary") echo "false"; else echo "true";?>" aria-controls="collapseTwo">
+    <li class="nav-item <?php echo $classActive_2;?>">
+        <a class="nav-link <?php echo $classCollapsed_2;?>" href="#" data-toggle="collapse" data-target="#collapseTwox" aria-expanded="<?php echo $classCollapsed_2;?>" aria-controls="collapseTwox">
             <i class="fas fa-fw fa-bars"></i>
             <span>Data Ganda Penduduk</span>
         </a>
-        <div id="collapseTwo" class="<?php if($menu=="laporan" || $menu=="summary") echo "collapse show"; else echo "collapse";?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div id="collapseTwox" class="<?php echo $classCollapseShow_2;?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">            
                 <a class="collapse-item" href="<?php echo base_url();?>laporan/summary_data">Summary</a>
                 <a class="collapse-item" href="<?php echo base_url();?>laporan">Detail</a>
