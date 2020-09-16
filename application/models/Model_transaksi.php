@@ -39,7 +39,7 @@
             $sql .= ($param6 != '') ? " AND NIK_KTP LIKE '%".$param6."'% " : "";
             $sql .= ($param7 != '') ? " AND NAMA_PENERIMA LIKE '%".$param7."'% " : "";
             $sql .= " ORDER BY NOKK_DTKS,IDARTBDT ASC";
-            echo $sql;
+            
             $query = $this->db->query($sql);
             return $query;
         }
@@ -170,8 +170,9 @@
             return $query;
         }
         
-        function showPermohonanById($where){
-            return $this->db->get_where("surat_permohonan_data_ganda",$where);
+        function showPermohonanById($where,$table){            
+            $query = $this->db->get_where($table, $where, 100, 0);
+            return $query;
         }
                 
     }
