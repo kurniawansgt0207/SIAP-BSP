@@ -28,19 +28,19 @@
                                             <input type="hidden" name="id_surat" id="id_surat" value="<?php echo $data_surat[0]->id;?>">
                                             <div class="form-group">
                                                 <label>Nama Pemohon</label>
-                                                <input type="text" class="form-control" name="nm_pemohon" id="nm_pemohon" readonly value="<?php echo $data_surat[0]->nm_pemohon;?>">
+                                                <input type="text" class="form-control form-control-sm" name="nm_pemohon" id="nm_pemohon" readonly value="<?php echo $data_surat[0]->nm_pemohon;?>">
                                             </div>
                                             <div class="form-group">
                                                 <label>Tanggal Permohonan</label>
-                                                <input type="text" class="form-control" name="tgl_permohonan" readonly id="tgl_permohonan" value="<?php echo $data_surat[0]->tgl_permohonan;?>">
+                                                <input type="text" class="form-control form-control-sm" name="tgl_permohonan" readonly id="tgl_permohonan" value="<?php echo $data_surat[0]->tgl_permohonan;?>">
                                             </div>
                                             <div class="form-group">
                                                 <label>Provinsi</label>
-                                                <input type="text" class="form-control" name="nm_propinsi" id="nm_propinsi" readonly value="<?php echo $data_surat[0]->nm_propinsi;?>">
+                                                <input type="text" class="form-control form-control-sm" name="nm_propinsi" id="nm_propinsi" readonly value="<?php echo $data_surat[0]->nm_propinsi;?>">
                                             </div>
                                             <div class="form-group">
                                                 <label>Kabupaten/Kota</label>      
-                                                <input type="text" class="form-control" name="nm_kabupaten" id="nm_kabupaten" readonly value="<?php echo $data_surat[0]->nm_kabupaten;?>">
+                                                <input type="text" class="form-control form-control-sm" name="nm_kabupaten" id="nm_kabupaten" readonly value="<?php echo $data_surat[0]->nm_kabupaten;?>">
                                             </div>                                            
                                             <div class="form-group">
                                                 <label>Status</label>
@@ -53,21 +53,22 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Alasan ditolak</label>
-                                                <textarea class="form-control" id="alasan_tolak" name="alasan_tolak" disabled cols="20" rows="5"></textarea>
+                                                <textarea class="form-control form-control-sm" id="alasan_tolak" name="alasan_tolak" disabled cols="20" rows="5"></textarea>
                                             </div>
                                             <div class="form-group">
                                                 <label>Nama Pengecek</label>
-                                                <input type="text" class="form-control" id="nm_pengecek" name="nm_pengecek" value="">
+                                                <input type="text" class="form-control form-control-sm" id="nm_pengecek" name="nm_pengecek" value="">
                                             </div>
                                             <div class="form-group">                                                
-                                                <a href="<?php echo base_url().'transaksi/daftar_surat';?>" class="btn btn-secondary btn-icon-split">
+                                                <!--<a href="<?php echo base_url().'transaksi/daftar_surat';?>" class="btn btn-sm btn-icon-split">
                                                     <span class="icon text-white-50">
                                                       <i class="fas fa-arrow-left"></i>
                                                     </span>
-                                                    <span class="text">KEMBALI</span>
-                                                </a>
+                                                    <span class="text">Kembali</span>
+                                                </a>-->
                                                 
-                                                <input type="submit" value="Update Status" name="btn_submit" id="btn_submit" class="btn btn-primary btn-default">
+                                                <input type="submit" value="Update" name="btn_submit" id="btn_submit" class="btn btn-sm btn-info">
+                                                <input type="button" value="Batal" name="btn_batal" id="btn_batal" class="btn btn-sm btn-danger" onclick="batalForm()">
                                             </div>
                                             <hr>                    
                                         </form>
@@ -92,6 +93,10 @@
             } else {
                 document.getElementById('alasan_tolak').disabled = false;                
             }
+        }
+        
+        function batalForm(){
+            window.location = "<?php echo base_url();?>transaksi/daftar_surat";
         }
     </script>
 </body>

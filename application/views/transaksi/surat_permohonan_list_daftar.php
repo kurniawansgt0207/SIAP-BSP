@@ -1,16 +1,16 @@
 <?php //ini_set('display_errors','off'); ?>
 <div class="card-body">
     <div class="table-responsive">
-        <table class="table table-striped table-hover table-sm" id="dataTable" width="100%" cellspacing="0">
-            <thead>
+        <table class="table table-hover table-sm" id="dataTable" width="100%" cellspacing="0">
+            <thead class="thead-dark">
                 <tr>
-                    <th class="th-sm">NAMA PEMOHON</th>
-                    <th class="th-sm">TGL PERMOHONAN</th>
-                    <th class="th-sm">PROVINSI</th>
-                    <th class="th-sm">KABUPATEN/KOTA</th>
-                    <th class="th-sm">SURAT PERMOHONAN</th>
-                    <th class="th-sm">LAMPIRAN DATA</th>
-                    <th class="th-sm">STATUS</th>
+                    <th class="th-sm text-center">NAMA PEMOHON</th>                    
+                    <th class="th-sm text-center">PROVINSI</th>
+                    <th class="th-sm text-center">KABUPATEN/KOTA</th>
+                    <th class="th-sm text-center">SURAT PERMOHONAN</th>
+                    <th class="th-sm text-center">LAMPIRAN DATA</th>
+                    <th class="th-sm text-center">STATUS</th>
+                    <th class="th-sm text-center">AKSI</th>
                 </tr>
             </thead>
             <tbody>
@@ -20,24 +20,31 @@
                     foreach($list_data as $data_surat){
                 ?>
                 <tr>
-                    <td><?php echo ucwords(strtolower($data_surat->nm_pemohon));?></td>
-                    <td><?php echo $data_surat->tgl_permohonan;?></td>
-                    <td><?php echo ucwords(strtolower($data_surat->nm_propinsi));?></td>
-                    <td><?php echo ucwords(strtolower($data_surat->nm_kabupaten));?></td>
-                    <td>
+                    <td class="text-nowrap"><?php echo ucwords(strtolower($data_surat->nm_pemohon));?></td>                    
+                    <td class="text-nowrap"><?php echo ucwords(strtolower($data_surat->nm_propinsi));?></td>
+                    <td class="text-nowrap"><?php echo ucwords(strtolower($data_surat->nm_kabupaten));?></td>
+                    <td class="text-nowrap">
                         <a href="<?php echo base_url()?>uploads/<?php echo $data_surat->nm_surat_permohonan;?>" target="_blank">
                             <?php echo ucwords(strtolower($data_surat->nm_surat_permohonan));?>
                         </a>
                     </td>
-                    <td>
+                    <td class="text-nowrap">
                         <a href="<?php echo base_url()?>uploads/<?php echo $data_surat->nm_lampiran_dokumen;?>" target="_blank">
                             <?php echo ucwords(strtolower($data_surat->nm_lampiran_dokumen));?>
                         </a>
                     </td>
-                    <td align="center">
-                        <?php //echo ucwords(strtolower($data_surat->status_permohonan));?>
-                        <?php echo anchor('transaksi/rubah_status_permohonan/'.$data_surat->id,'['.$data_surat->status_permohonan.']'); ?>
-                    </td>                    
+                    <td class="text-nowrap" align="center">                        
+                        <?php echo $data_surat->status_permohonan; ?>
+                    </td>            
+                    <td class="text-nowrap" align="center">
+                        <?php
+                            if($data_surat->status_permohonan=="Open"){
+                        ?>
+                        <?php echo anchor('transaksi/cek_data_permohonan/'.$data_surat->id.'/0','Cek Data'); ?>
+                        <?php
+                            }
+                        ?>
+                    </td>
                 </tr>
                 <?php
                     }

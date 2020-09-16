@@ -1,6 +1,6 @@
 <?php
     defined('BASEPATH') OR exit('No direct script access allowed');
-    ini_set('memory_limit','2048M'); 
+    ini_set('memory_limit','4096M'); 
     class Transaksi extends CI_Controller {
         
         function __construct()
@@ -282,7 +282,7 @@
         
         function rubah_status_permohonan($id_surat){
             $where = array('id' => $id_surat);
-            $data['data_surat'] = $this->Model_transaksi->showPermohonanById($where)->result();
+            $data['data_surat'] = $this->Model_transaksi->showPermohonanById($where,"surat_permohonan_data_ganda")->result();
             $data['provinsi'] = $this->Model_transaksi->getProvinsi()->result();            
             $prov = $data['data_surat'][0]->nm_propinsi;
             $data['kab_kota'] = $this->Model_transaksi->getKabKota($prov)->result();
@@ -309,6 +309,82 @@
 
             $this->Model_transaksi->update_data($where,$data,'surat_permohonan_data_ganda');
             redirect('transaksi/daftar_surat');
+        }
+        
+        function cek_data_permohonan($id_surat,$ket){
+            $data['menu'] = "upload";
+            $where = array(
+                        'id' => $id_surat
+                    );
+            $data_surat = $this->Model_transaksi->showPermohonanById($where,"surat_permohonan_data_ganda")->result();
+            $nmProp = $data_surat[0]->nm_propinsi;
+            $nmKab = $data_surat[0]->nm_kabupaten;
+            $ketTambahan = ($ket != "0" || $ket != 0) ? $ket : "CLEAN";
+            $where2 = array (
+                        'NMPROP' => $nmProp,
+                        'NMKAB' => $nmKab,
+                        'KET_TAMBAHAN' => $ketTambahan
+                    );
+            $data['data_surat'] = $this->Model_transaksi->showPermohonanById($where2,"data_ganda")->result();
+            $data['id_surat'] = $id_surat;
+            $data['nm_propinsi'] = $nmProp;
+            $data['nm_kabupaten'] = $nmKab;
+            $data['keterangan'] = $ketTambahan;
+            $this->load->view('transaksi/list_cek_data_permohonan', $data);
+        }
+        
+        function download_data($idSurat,$keterangan){ 
+            $where = array(
+                        'id' => $idSurat
+                    );
+            $data_surat = $this->Model_transaksi->showPermohonanById($where,"surat_permohonan_data_ganda")->result();
+            $nmProp = $data_surat[0]->nm_propinsi;
+            $nmKab = $data_surat[0]->nm_kabupaten;            
+            $where2 = array (
+                        'NMPROP' => $nmProp,
+                        'NMKAB' => $nmKab,
+                        'KET_TAMBAHAN' => $keterangan
+                    );
+            $result = $this->Model_transaksi->showPermohonanById($where2,"data_ganda")->result(); 
+            $ketStatus = $result[0]->KET_TAMBAHAN;
+            
+            $pdf = new FPDF('L','mm','Legal');
+            // membuat halaman baru
+            $pdf->AddPage();
+            $pdf->SetLeftMargin(5);       
+            $pdf->SetAutoPageBreak(20, 4);
+            // setting jenis font yang akan digunakan
+            $pdf->SetFont('Courier','B',16);
+            // mencetak string 
+            $pdf->Cell(330,7,'CEK PERMOHONAN VALIDASI DATA GANDA PENERIMA BANTUAN',0,1,'C');         
+            $pdf->Cell(10,7,'',0,1);
+            $pdf->SetFont('Courier','B',12);
+            $pdf->Cell(110,7,'PROPINSI: '.$nmProp,0,0,'C');         
+            $pdf->Cell(110,7,'KABUPATEN: '.$nmKab,0,0,'C');         
+            $pdf->Cell(110,7,'KET STATUS: '.$ketStatus,0,0,'C');         
+            // Memberikan space kebawah agar tidak terlalu rapat
+            $pdf->Cell(10,7,'',0,1);            
+            
+            $pdf->SetFont('Helvetica','B',11);
+            $pdf->Cell(36,8,'NO KARTU',1,0,'C');
+            $pdf->Cell(36,8,'NIK KTP',1,0,'C');
+            $pdf->Cell(36,8,'NO KK',1,0,'C');
+            $pdf->Cell(40,8,'IDARTBDT',1,0,'C');
+            $pdf->Cell(83,8,'NAMA PENERIMA',1,0,'C');            
+            $pdf->Cell(55,8,'KECAMATAN',1,0,'C');
+            $pdf->Cell(55,8,'KELURAHAN',1,1,'C');
+            
+            $pdf->SetFont('Helvetica','',10);                                   
+            foreach ($result as $row){
+                $pdf->Cell(36,7,$row->NOMOR_KARTU,1,0,'C');
+                $pdf->Cell(36,7,$row->NIK_KTP,1,0,'C');
+                $pdf->Cell(36,7,$row->NOKK_DTKS,1,0,'C');
+                $pdf->Cell(40,7,$row->IDARTBDT,1,0,'C');
+                $pdf->Cell(83,7,$row->NAMA_PENERIMA,1,0,'L');  
+                $pdf->Cell(55,7,$row->NMKEC,1,0,'C'); 
+                $pdf->Cell(55,7,$row->NMKEL,1,1,'C'); 
+            }
+            $pdf->Output();
         }
     }
     

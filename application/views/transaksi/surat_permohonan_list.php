@@ -18,12 +18,12 @@
                 <div class="container-fluid">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Daftar Surat Permohonan Validasi Data Ganda</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Cek Surat Permohonan Validasi Data Ganda</h6>
                         </div>
                         
                         <div class="card-body p-4" style="margin-top:-35px">
                             <div class="row">
-                                <div class="col-lg-8">                                    
+                                <div class="col-lg-6">                                    
                                     <div class="p-4">
                                     <div class="text-info text-center text-capitalize">
                                     <?php
@@ -35,7 +35,7 @@
                                         <form class="user" name="frmDaftarSurat">
                                             <div class="form-group">
                                                 <label>Provinsi</label>
-                                                <select name="provinsi" id="provinsi" class="form-control select1" onchange="list_of_kab()">  
+                                                <select name="provinsi" id="provinsi" class="form-control form-control-sm select1" onchange="list_of_kab()">  
                                                     <option></option>
                                                     <?php
                                                         foreach($provinsi as $prov){
@@ -52,7 +52,7 @@
                                                 <div id="list_kab">--Pilih Kabupaten/Kota--</div>                                               
                                             </div>                                            
                                             <div class="form-group">                                                
-                                                <input type="button" value="Tampilkan Data" name="btn_show" id="btn_show" onclick="showData()" class="btn btn-default btn-info">                                                
+                                                <input type="button" value="Tampilkan Data" name="btn_show" id="btn_show" onclick="showData()" class="btn btn-sm btn-info">
                                             </div>
                                         </form>
                                     </div>                                    
