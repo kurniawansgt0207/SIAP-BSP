@@ -122,7 +122,6 @@
             var propinsi = document.getElementById('propinsi').value;
             var kabupaten = document.getElementById('kabupaten').value;
             var keterangan = document.getElementById('ket_tambahan').value;
-            alert(propinsi+" "+kabupaten+" "+keterangan)
             var myWindow = window.open("<?php echo base_url();?>transaksi/download_data/<?php echo $id_surat;?>/"+keterangan, "_blank");
         }
         
