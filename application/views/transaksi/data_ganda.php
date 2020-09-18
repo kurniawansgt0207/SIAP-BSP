@@ -32,6 +32,7 @@
                                                     <option></option>
                                                     <?php
                                                         foreach($provinsi as $prov){
+                                                            
                                                     ?>
                                                     <option value="<?php echo $prov->NMPROVINSI;?>"><?php echo $prov->NMPROVINSI;?></option>
                                                     <?php

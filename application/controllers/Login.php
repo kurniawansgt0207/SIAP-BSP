@@ -50,9 +50,11 @@
                 foreach($result as $row)
                 {
                     $sess_array = array(
-                    'id' => $row->id,
-                    'username' => $row->username,
-                    'nama_pengguna' => $row->nama_pengguna
+                        'id' => $row->id,
+                        'username' => $row->username,
+                        'nama_pengguna' => $row->fullname,
+                        'group_pengguna' => $row->group_user,
+                        'provinsi' => $row->provinsi
                     );
                     $this->session->set_userdata('logged_in', $sess_array);
                 }

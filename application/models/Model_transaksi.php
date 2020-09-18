@@ -30,7 +30,7 @@
             
             $query = $this->db->get();*/
             
-            $sql = "SELECT TOP 10000 * FROM data_ganda WHERE NAMA_PENERIMA != ''";
+            $sql = "SELECT * FROM data_ganda WHERE NAMA_PENERIMA != ''";
             $sql .= ($param1 != '') ? " AND NMPROP='".$param1."' " : "";
             $sql .= ($param2 != '') ? " AND NMKAB='".$param2."' " : "";
             $sql .= ($param3 != '') ? " AND NMKEC='".$param3."' " : "";
@@ -48,9 +48,12 @@
             return $this->db->get_where($table,$where);
         }
                 
-        function getProvinsi(){
-            $sql = "SELECT a.NMPROVINSI FROM m_prov_kab_kec_kel_indonesia a
-                    GROUP BY a.NMPROVINSI ORDER BY a.NMPROVINSI";
+        function getProvinsi($provinsi){
+            $sql = "SELECT a.NMPROVINSI FROM m_prov_kab_kec_kel_indonesia a ";
+            if($provinsi!=''){
+                $sql .= "WHERE NMPROVINSI='$provinsi'";
+            }
+            $sql .= "GROUP BY a.NMPROVINSI ORDER BY a.NMPROVINSI";
             $query = $this->db->query($sql);
             return $query;
         }
@@ -84,28 +87,37 @@
             $this->db->update($table,$data);
 	}	
         
-        function rekap_data_per_provinsi(){
+        function rekap_data_per_provinsi($provinsi){
+            $extQry1 = "";
+            $extQry2 = "";
+            
+            if($provinsi!=''){
+                $extQry1 = " WHERE a.NMPROP='$provinsi'";
+                $extQry2 = " AND a.NMPROP='$provinsi'";
+            }
+            
             $sql = "SELECT NMPROP,sum(total_data) total_data,sum(jml_clean) jml_clean,sum(jml_unclean) jml_unclean,
             sum(jml_nonaktif) jml_nonaktif
             FROM
             (
-            SELECT NMPROP,COUNT(IDARTBDT) total_data,0 jml_clean,0 jml_unclean,0 jml_nonaktif 
-            FROM data_ganda 
+            SELECT a.NMPROP,COUNT(a.IDARTBDT) total_data,0 jml_clean,0 jml_unclean,0 jml_nonaktif 
+            FROM data_ganda a
+            $extQry1
             GROUP BY NMPROP
             UNION ALL
             SELECT a.NMPROP,0 total_data,COUNT(a.IDARTBDT) jml_clean,0 jml_unclean,0 jml_nonaktif 
             FROM data_ganda a 
-            WHERE a.KET_TAMBAHAN='CLEAN'
+            WHERE a.KET_TAMBAHAN='CLEAN' $extQry2
             GROUP BY a.NMPROP
             UNION ALL
             SELECT a.NMPROP,0 total_data,0 jml_clean,COUNT(a.IDARTBDT) jml_unclean,0 jml_nonaktif 
             FROM data_ganda a 
-            WHERE a.KET_TAMBAHAN='UNCLEAN'
+            WHERE a.KET_TAMBAHAN='UNCLEAN' $extQry2
             GROUP BY a.NMPROP
             UNION ALL
             SELECT a.NMPROP,0 total_data,0 jml_clean,0 jml_unclean,COUNT(a.IDARTBDT) jml_nonaktif 
             FROM data_ganda a 
-            WHERE a.KET_TAMBAHAN='NONAKTIF'
+            WHERE a.KET_TAMBAHAN='NONAKTIF' $extQry2
             GROUP BY a.NMPROP
             ) aa GROUP BY NMPROP;";
             $query = $this->db->query($sql);

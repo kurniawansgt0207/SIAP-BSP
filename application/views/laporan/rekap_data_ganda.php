@@ -87,7 +87,7 @@
     <?php $this->load->view("_partials/js.php") ?>
     
     <script>                
-        $("#list_data_ganda").load("<?php echo base_url()?>transaksi/list_data");
+        //$("#list_data_ganda").load("<?php echo base_url()?>transaksi/list_data");
 
         function list_of_kab(){
             var prov = document.getElementById('provinsi').value;                        

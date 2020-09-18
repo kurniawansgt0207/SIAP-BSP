@@ -8,12 +8,30 @@
             parent::__construct();
 
             $this->load->model('Model_transaksi');
+            $this->load->model('Model_group_access');
             $this->load->library('pdf');
         }
         
         function index(){
-            $result['provinsi'] = $this->Model_transaksi->getProvinsi()->result();
-            $result['menu'] = "transaksi";
+            if(!$this->session->userdata('logged_in'))
+            {
+                $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
+                $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
+                redirect('login');
+            }
+                        
+            $session_data = $this->session->userdata('logged_in');            
+            $result['nama_pengguna'] = $session_data['nama_pengguna'];
+            $result['username'] = $session_data['username'];
+            $result['group_pengguna'] = $session_data['group_pengguna'];
+            $result['provinsi_pengguna'] = $session_data['provinsi'];
+            
+            $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
+            $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
+            $result['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();
+            
+            $result['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();
+            $result['menu'] = $result['menu_group_transaksi'][0]->module_name;
             
             $this->load->view('transaksi/data_ganda', $result);
         }
@@ -54,10 +72,27 @@
         }
                         
         function rubah_data_ganda($id){
-            $data['menu'] = "transaksi";
+            if(!$this->session->userdata('logged_in'))
+            {
+                $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
+                $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
+                redirect('login');
+            }
+            
+            $session_data = $this->session->userdata('logged_in');            
+            $data['nama_pengguna'] = $session_data['nama_pengguna'];
+            $data['username'] = $session_data['username'];
+            $data['group_pengguna'] = $session_data['group_pengguna'];
+            $data['provinsi_pengguna'] = $session_data['provinsi'];
+            
+            $data['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
+            $data['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
+            $data['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();
+            
+            $data['menu'] = $data['menu_group_transaksi'][0]->module_name;
             $where = array('IDARTBDT' => $id);
             $data['user'] = $this->Model_transaksi->edit_data($where,'data_ganda')->result();
-            $data['provinsi'] = $this->Model_transaksi->getProvinsi()->result();            
+            $data['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();            
             $prov = $data['user'][0]->NMPROP;
             $data['kab_kota'] = $this->Model_transaksi->getKabKota($prov)->result();
             $kab = $data['user'][0]->NMKAB;
@@ -214,13 +249,47 @@
         }
         
         function download_surat(){
-            $data['menu'] = "download";
+            if(!$this->session->userdata('logged_in'))
+            {
+                $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
+                $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
+                redirect('login');
+            }
+            
+            $session_data = $this->session->userdata('logged_in');            
+            $data['nama_pengguna'] = $session_data['nama_pengguna'];
+            $data['username'] = $session_data['username'];
+            $data['group_pengguna'] = $session_data['group_pengguna'];
+            $data['provinsi_pengguna'] = $session_data['provinsi'];
+            
+            $data['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
+            $data['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
+            $data['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();            
+            
+            $data['menu'] = "surat_permohonan";
             $this->load->view('transaksi/surat_permohonan_view', $data);
         }
         
         function upload_surat(){
-            $data['menu'] = "upload";
-            $data['provinsi'] = $this->Model_transaksi->getProvinsi()->result();
+            if(!$this->session->userdata('logged_in'))
+            {
+                $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
+                $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
+                redirect('login');
+            }
+            
+            $session_data = $this->session->userdata('logged_in');            
+            $data['nama_pengguna'] = $session_data['nama_pengguna'];
+            $data['username'] = $session_data['username'];
+            $data['group_pengguna'] = $session_data['group_pengguna'];
+            $data['provinsi_pengguna'] = $session_data['provinsi'];
+            
+            $data['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
+            $data['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
+            $data['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();            
+            
+            $data['menu'] = "surat_permohonan";
+            $data['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();
             $this->load->view('transaksi/surat_permohonan_upload', $data);
         }
         
@@ -268,8 +337,25 @@
         }
         
         function daftar_surat(){
-            $data['menu'] = "upload";
-            $data['provinsi'] = $this->Model_transaksi->getProvinsi()->result();
+            if(!$this->session->userdata('logged_in'))
+            {
+                $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
+                $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
+                redirect('login');
+            }
+            
+            $session_data = $this->session->userdata('logged_in');            
+            $data['nama_pengguna'] = $session_data['nama_pengguna'];
+            $data['username'] = $session_data['username'];
+            $data['group_pengguna'] = $session_data['group_pengguna'];
+            $data['provinsi_pengguna'] = $session_data['provinsi'];
+            
+            $data['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
+            $data['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
+            $data['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();
+            
+            $data['menu'] = "surat_permohonan";
+            $data['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();
             $this->load->view('transaksi/surat_permohonan_list', $data);
         }
         
