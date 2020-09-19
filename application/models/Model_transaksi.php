@@ -30,7 +30,7 @@
             
             $query = $this->db->get();*/
             
-            $sql = "SELECT TOP 50 * FROM data_ganda WHERE NAMA_PENERIMA != ''";
+            $sql = "SELECT * FROM data_ganda WHERE NAMA_PENERIMA != ''";
             $sql .= ($param1 != '') ? " AND NMPROP='".$param1."' " : "";
             $sql .= ($param2 != '') ? " AND NMKAB='".$param2."' " : "";
             $sql .= ($param3 != '') ? " AND NMKEC='".$param3."' " : "";
