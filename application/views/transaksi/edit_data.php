@@ -27,27 +27,27 @@
                                         <form class="user" name="frmEditDataGanda" method="post" action="<?php echo base_url().'transaksi/update'; ?>">                                            
                                             <div class="form-group">
                                                 <label>Nama Penerima</label>
-                                                <input type="text" class="form-control" name="nm_penerima" id="nm_penerima" value="<?php echo $user[0]->NAMA_PENERIMA;?>">
+                                                <input type="text" class="form-control form-control-sm" name="nm_penerima" id="nm_penerima" value="<?php echo $user[0]->NAMA_PENERIMA;?>">
                                             </div>
                                             <div class="form-group">
                                                 <label>Nomor Kartu</label>
-                                                <input type="text" class="form-control" name="no_kartu" id="no_kartu" value="<?php echo $user[0]->NOMOR_KARTU;?>">
+                                                <input type="text" class="form-control form-control-sm" name="no_kartu" id="no_kartu" value="<?php echo $user[0]->NOMOR_KARTU;?>">
                                             </div>
                                             <div class="form-group">
                                                 <label>NIK KTP</label>
-                                                <input type="text" class="form-control" name="nik_ktp" id="nik_ktp" value="<?php echo $user[0]->NIK_KTP;?>">
+                                                <input type="text" class="form-control form-control-sm" name="nik_ktp" id="nik_ktp" value="<?php echo $user[0]->NIK_KTP;?>">
                                             </div>
                                             <div class="form-group">
                                                 <label>ID Pengurus</label>
-                                                <input type="text" class="form-control" name="id_pengurus" id="id_pengurus" value="<?php echo $user[0]->ID_PENGURUS;?>">
+                                                <input type="text" class="form-control form-control-sm" name="id_pengurus" id="id_pengurus" value="<?php echo $user[0]->ID_PENGURUS;?>">
                                             </div>
                                             <div class="form-group">
                                                 <label>Alamat</label>
-                                                <textarea class="form-control" name="alamat" id="alamat"><?php echo $user[0]->ALAMAT;?></textarea>
+                                                <textarea class="form-control form-control-sm" name="alamat" id="alamat"><?php echo $user[0]->ALAMAT;?></textarea>
                                             </div>
                                             <div class="form-group">
                                                 <label>Provinsi</label>
-                                                <select name="provinsi" id="provinsi" class="form-control select1" onchange="list_of_kab()">  
+                                                <select name="provinsi" id="provinsi" class="form-control form-control-sm select1" onchange="list_of_kab()">  
                                                     <option></option>
                                                     <?php
                                                         foreach($provinsi as $prov){
@@ -61,7 +61,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Kabupaten/Kota</label>      
-                                                <select name="kab_kota" id="kab_kota" class="form-control select2" onchange="list_of_kec()">
+                                                <select name="kab_kota" id="kab_kota" class="form-control form-control-sm select2" onchange="list_of_kec()">
                                                     <option></option>
                                                     <?php
                                                         foreach($kab_kota as $kab){
@@ -75,7 +75,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Kecamatan</label>
-                                                <select name="kecamatan" id="kecamatan" class="form-control select3" onchange="list_of_kel()">
+                                                <select name="kecamatan" id="kecamatan" class="form-control form-control-sm select3" onchange="list_of_kel()">
                                                     <option></option>
                                                     <?php
                                                        foreach($kecamatan as $kec){
@@ -89,7 +89,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Kelurahan</label>
-                                                <select name="kel_desa" id="kel_desa" class="form-control select4" onchange="getKelurahan()">
+                                                <select name="kel_desa" id="kel_desa" class="form-control form-control-sm select4" onchange="getKelurahan()">
                                                     <option></option>
                                                     <?php
                                                         foreach($kelurahan as $kel_desa){
@@ -103,24 +103,24 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>ID BDT</label>
-                                                <input type="text" class="form-control" id="idbdt" name="idbdt" value="<?php echo $user[0]->IDBDT;?>">
+                                                <input type="text" class="form-control form-control-sm" id="idbdt" name="idbdt" value="<?php echo $user[0]->IDBDT;?>">
                                             </div>
                                             <div class="form-group">
                                                 <label>ID ART BDT</label>
-                                                <input type="text" class="form-control" id="idartbdt" name="idartbdt" value="<?php echo $user[0]->IDARTBDT;?>">
+                                                <input type="text" class="form-control form-control-sm" id="idartbdt" name="idartbdt" value="<?php echo $user[0]->IDARTBDT;?>">
                                             </div>
                                             <div class="form-group">
                                                 <label>Nama DTKS</label>
-                                                <input type="text" class="form-control" id="nmdtks" name="nmdtks" value="<?php echo $user[0]->NAMA_DTKS;?>">
+                                                <input type="text" class="form-control form-control-sm" id="nmdtks" name="nmdtks" value="<?php echo $user[0]->NAMA_DTKS;?>">
                                             </div>
                                             <div class="form-group">
                                                 <label>ID Keluarga</label>
-                                                <input type="text" class="form-control" id="idkeluarga" name="idkeluarga" value="<?php echo $user[0]->IDKELUARGA;?>">
+                                                <input type="text" class="form-control form-control-sm" id="idkeluarga" name="idkeluarga" value="<?php echo $user[0]->IDKELUARGA;?>">
                                             </div>
                                             
                                             <div class="form-group">
                                                 <label>Keterangan Tambahan</label>
-                                                <select name="ket_tambahan" id="ket_tambahan" class="form-control select4">
+                                                <select name="ket_tambahan" id="ket_tambahan" class="form-control form-control-sm select4">
                                                     <option></option>                                                    
                                                     <option value="CLEAN" <?php if($user[0]->KET_TAMBAHAN=='CLEAN') echo "selected";?>>CLEAN</option>
                                                     <option value="UNCLEAN" <?php if($user[0]->KET_TAMBAHAN=='UNCLEAN') echo "selected";?>>UNCLEAN</option>
@@ -128,14 +128,14 @@
                                                 </select>
                                             </div>
                                             <div class="form-group">                                                
-                                                <a href="<?php echo base_url().'transaksi';?>" class="btn btn-secondary btn-icon-split">
+                                                <a href="<?php echo base_url().'transaksi';?>" class="btn btn-sm btn-secondary btn-icon-split">
                                                     <span class="icon text-white-50">
                                                       <i class="fas fa-arrow-left"></i>
                                                     </span>
-                                                    <span class="text">KEMBALI</span>
+                                                    <span class="text">Kembali</span>
                                                 </a>
                                                 
-                                                <input type="submit" value="Update Data" name="btn_submit" id="btn_submit" class="btn btn-primary btn-default">
+                                                <input type="submit" value="Update Data" name="btn_submit" id="btn_submit" class="btn btn-sm btn-primary btn-default">
                                             </div>
                                             <hr>                    
                                         </form>

@@ -28,7 +28,7 @@
                                         <form class="user" name="frmDataGanda" method="post" target="_blank" action="<?php echo base_url();?>transaksi/export_pdf">                                            
                                             <div class="form-group">
                                                 <label>Provinsi</label>
-                                                <select name="provinsi" id="provinsi" class="form-control select1" onchange="list_of_kab()">  
+                                                <select name="provinsi" id="provinsi" class="form-control form-control-sm select1" onchange="list_of_kab()">  
                                                     <option></option>
                                                     <?php
                                                         foreach($provinsi as $prov){
@@ -57,7 +57,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Keterangan</label>
-                                                <select name="ket_tambahan" id="ket_tambahan" class="form-control">
+                                                <select name="ket_tambahan" id="ket_tambahan" class="form-control form-control-sm">
                                                     <option value="">--Semua Keterangan--</option>
                                                     <option value="CLEAN">CLEAN</option>
                                                     <option value="UNCLEAN">UNCLEAN</option>
@@ -66,15 +66,16 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>NIK Penerima</label>
-                                                <input type="text" class="form-control" id="nik" name="nik" placeholder="NIK KTP">
+                                                <input type="text" class="form-control form-control-sm" id="nik" name="nik" placeholder="NIK KTP">
                                             </div>
                                             <div class="form-group">
                                                 <label>Nama Penerima</label>
-                                                <input type="text" class="form-control" id="nama" name="nama" placeholder="Nama Penerima">
+                                                <input type="text" class="form-control form-control-sm" id="nama" name="nama" placeholder="Nama Penerima">
                                             </div>
                                             <div class="form-group">
-                                                <input type="button" value="Cari Data" name="btn_submit" id="btn_submit" onclick="cari()" class="btn btn-primary btn-default">
-                                                <input type="submit" value="Cetak Data" name="btn_cetak" id="btn_cetak" class="btn btn-default btn-danger">                                                
+                                                <input type="button" value="Cari Data" name="btn_submit" id="btn_submit" onclick="cari()" class="btn btn-sm btn-primary">
+                                                <input type="submit" value="Cetak Data" name="btn_cetak" id="btn_cetak" class="btn btn-sm btn-default btn-danger">                                                
+                                                <input type="button" value="Export CSV" name="btn_csv" id="btn_csv" onclick="exportCSV()" class="btn btn-sm btn-default btn-success">
                                             </div>
                                             <hr>                    
                                         </form>
@@ -198,6 +199,28 @@
                 }   
 
             }); 
+        }
+        
+        function exportCSV(){
+            alert("Export to CSV File");
+            var prov = document.getElementById('provinsi').value;
+            var kab = document.getElementById('kab_kotax').value;
+            var kec = document.getElementById('kecamatanx').value;
+            var kel = document.getElementById('kel_desax').value;
+            var ket = document.getElementById('ket_tambahan').value;
+            var nik = document.getElementById('nik').value;
+            var nama = document.getElementById('nama').value; 
+            
+            var kab2 = (kab!="") ? kab : "0";
+            var kec2 = (kec!="") ? kec : "0";
+            var kel2 = (kel!="") ? kel : "0";
+            var ket2 = (ket!="") ? ket : "0";
+            var nik2 = (nik!="") ? nik : "0";
+            var nama2 = (nama!="") ? nama : "0";
+            
+            var url = "<?php echo base_url()?>transaksi/exportCSV/"+prov+"/"+kab2+"/"+kec2+"/"+kel2+"/"+ket2+"/"+nik2+"/"+nama2;
+            
+            var myWindow = window.open(url, "_blank");            
         }
     </script>
 <!--    <script src="<?php echo base_url()?>assets/js/select2.js"></script>

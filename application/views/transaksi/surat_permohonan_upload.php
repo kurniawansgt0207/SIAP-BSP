@@ -35,7 +35,7 @@
                                         <form class="user" name="frmUploadSurat" action="<?php echo base_url();?>transaksi/submit_upload_surat">
                                             <div class="form-group">
                                                 <label>Provinsi</label>
-                                                <select name="provinsi" id="provinsi" class="form-control select1" onchange="list_of_kab()">  
+                                                <select name="provinsi" id="provinsi" class="form-control form-control-sm select1" onchange="list_of_kab()">  
                                                     <option></option>
                                                     <?php
                                                         foreach($provinsi as $prov){
@@ -53,14 +53,14 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Unggah Surat Permohonan</label>
-                                                <input type="file" class="form-control" id="surat_permohonan" name="surat_permohonan" accept="application/pdf">
+                                                <input type="file" class="form-control form-control-sm" id="surat_permohonan" name="surat_permohonan" accept="application/pdf">
                                             </div>
                                             <div class="form-group">
                                                 <label>Unggah Lampiran Dokumen</label>
-                                                <input type="file" class="form-control" id="lampiran_dokumen" name="lampiran_dokumen" accept="application/pdf">
+                                                <input type="file" class="form-control form-control-sm" id="lampiran_dokumen" name="lampiran_dokumen" accept="application/pdf">
                                             </div>
                                             <div class="form-group">                                                
-                                                <input type="submit" value="Kirim Data" name="btn_kirim" id="btn_kirim" class="btn btn-default btn-info">                                                
+                                                <input type="submit" value="Kirim Data" name="btn_kirim" id="btn_kirim" class="btn btn-sm btn-default btn-info">                                                
                                             </div>
                                         </form>
                                     </div>                                    

@@ -11,7 +11,6 @@
     <div class="sidebar-brand-text" style="text-align: center; color: white; font-size: 12px; margin-top: -10px; margin-left: 40px; padding-bottom: 5px">
         <span>Direktorat PFM Wilayah I</span>
     </div>
-
     <?php
         foreach ($menu_group_none as $mparent_none){
             $m_name = $mparent_none->module_name;
@@ -23,8 +22,7 @@
             
             $activeClass = ($menu==$m_name) ? "active" : "";
     ?>
-    <hr class="sidebar-divider my-0">
-    
+    <hr class="sidebar-divider my-0">    
     <li class="nav-item <?php echo $activeClass;?>">
         <a class="nav-link" href="<?php echo base_url().$m_url;?>">
             <i class="fas fa-fw <?php echo $m_class;?>"></i>
@@ -34,12 +32,8 @@
     <?php
         }
     ?>
-    <!-- Divider -->
     <hr class="sidebar-divider">
-    <!-- Heading -->
-    <div class="sidebar-heading">
-    <?php echo $menu_group_transaksi[0]->module_group;?>
-    </div>
+    <div class="sidebar-heading"><?php echo $menu_group_transaksi[0]->module_group;?></div>
     <?php            
         foreach ($menu_group_transaksi as $mparent_trn){
             $m_name_trn = $mparent_trn->module_name;
@@ -55,8 +49,7 @@
             $classCollapsed_1 = (($menu==$m_name_trn)) ? "" : "collapsed";            
             $classExpand_1 = (($menu==$m_name_trn)) ? "false" : "true";            
             $classCollapseShow_1 = (($menu==$m_name_trn)) ? "collapse show" : "collapse";            
-            $class_child = count($child_menu)>0 ? 'data-toggle="collapse" data-target="#collapseTwo" aria-expanded="'.$classExpand_1.'" aria-controls="collapseTwo"' : "";
-            
+            $class_child = count($child_menu)>0 ? 'data-toggle="collapse" data-target="#collapseTwo'.$m_name_trn.'" aria-expanded="'.$classExpand_1.'" aria-controls="collapseTwo"' : "";            
     ?>
     <li class="nav-item <?php echo $classActive_1;?>">
         <a class="nav-link <?php echo $classCollapsed_1;?>" href="<?php echo base_url().$m_url_trn;?>" <?php echo $class_child;?>>
@@ -66,7 +59,7 @@
         <?php
             if(count($child_menu)>0){
         ?>
-        <div id="collapseTwo" class="<?php echo $classCollapseShow_1;?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+        <div id="collapseTwo<?php echo $m_name_trn;?>" class="<?php echo $classCollapseShow_1;?>" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
             <?php
                 foreach($child_menu as $c_trans){
@@ -86,14 +79,9 @@
     </li>    
     <?php
         }
-    ?>        
-    
-    <!-- Divider -->
+    ?>            
     <hr class="sidebar-divider">
-    <!-- Heading -->
-    <div class="sidebar-heading">
-    <?php echo $menu_group_laporan[0]->module_group;?>
-    </div>
+    <div class="sidebar-heading"><?php echo $menu_group_laporan[0]->module_group;?></div>
     <?php    
         foreach ($menu_group_laporan as $mparent_rpt){
             $m_name_rpt = $mparent_rpt->module_name;
@@ -102,8 +90,6 @@
             $m_group_rpt = strtoupper($mparent_rpt->module_group);  
             $m_url_rpt = $mparent_rpt->module_url;
             $m_parent_rpt = $mparent_rpt->is_parent;
-                        
-            
                     
             $child_menu = $this->Model_group_access->showChildMenuGroup($group_pengguna,$mparent_rpt->id)->result();
             
@@ -142,14 +128,9 @@
     <?php
         }
     ?>                 
-
-    <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
-
-    <!-- Sidebar Toggler (Sidebar) -->
     <div class="text-center d-none d-md-inline">
         <button class="rounded-circle border-0" id="sidebarToggle"></button>
     </div>
-
 </ul>
 <!-- End of Sidebar -->

@@ -152,8 +152,8 @@
                                             Untuk mengunduh template surat permohonan sesuai dengan tampilan diatas, silahkan tekan tombol dibawah ini.
                                         </div>
                                         <center>                                            
-                                            <a href="<?php echo base_url().'assets/template_doc/Template_Surat_Permohonan.pdf';?>" target="_blank" class="btn btn-default btn-info">Download PDF (.pdf)</a>
-                                            <a href="<?php echo base_url().'assets/template_doc/Template_Surat_Permohonan.docx';?>" target="_blank" class="btn btn-default btn-info">Download Word (.docx)</a>
+                                            <a href="<?php echo base_url().'assets/template_doc/Template_Surat_Permohonan.pdf';?>" target="_blank" class="btn btn-sm btn-default btn-danger">Download PDF (.pdf)</a>
+                                            <a href="<?php echo base_url().'assets/template_doc/Template_Surat_Permohonan.docx';?>" target="_blank" class="btn btn-sm btn-default btn-info">Download Word (.docx)</a>
                                         </center>
                                     </div>
                                     

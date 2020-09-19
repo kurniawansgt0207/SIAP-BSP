@@ -30,16 +30,16 @@
             
             $query = $this->db->get();*/
             
-            $sql = "SELECT * FROM data_ganda WHERE NAMA_PENERIMA != ''";
+            $sql = "SELECT TOP 50 * FROM data_ganda WHERE NAMA_PENERIMA != ''";
             $sql .= ($param1 != '') ? " AND NMPROP='".$param1."' " : "";
             $sql .= ($param2 != '') ? " AND NMKAB='".$param2."' " : "";
             $sql .= ($param3 != '') ? " AND NMKEC='".$param3."' " : "";
             $sql .= ($param4 != '') ? " AND NMKELP='".$param4."' " : "";
             $sql .= ($param5 != '') ? " AND KET_TAMBAHAN='".$param5."' " : "";
-            $sql .= ($param6 != '') ? " AND NIK_KTP LIKE '%".$param6."'% " : "";
-            $sql .= ($param7 != '') ? " AND NAMA_PENERIMA LIKE '%".$param7."'% " : "";
+            $sql .= ($param6 != '') ? " AND NIK_KTP LIKE '%".$param6."%' " : "";
+            $sql .= ($param7 != '') ? " AND NAMA_PENERIMA LIKE '%".$param7."%' " : "";
             $sql .= " ORDER BY NOKK_DTKS,IDARTBDT ASC";
-            
+            //echo $sql;
             $query = $this->db->query($sql);
             return $query;
         }
@@ -187,5 +187,29 @@
             return $query;
         }
                 
+        public function upload_file($filename){
+            $this->load->library('upload'); // Load librari upload
+
+            $config['upload_path'] = './uploads/';
+            $config['allowed_types'] = 'csv';
+            $config['max_size']	= '2048';
+            $config['overwrite'] = true;
+            $config['file_name'] = $filename;
+
+            $this->upload->initialize($config); // Load konfigurasi uploadnya
+            if($this->upload->do_upload($filename)){ // Lakukan upload dan Cek jika proses upload berhasil
+                // Jika berhasil :
+                $return = array('result' => 'success', 'file' => $this->upload->data(), 'error' => '');
+                return $return;
+            }else{
+                // Jika gagal :
+                $return = array('result' => 'failed', 'file' => '', 'error' => $this->upload->display_errors());
+                return $return;
+            }
+        }
+        
+        function update_data_multiple($data){
+            return $this->db->update_batch('data_ganda',$data, 'IDARTBDT');
+        }
     }
 ?>

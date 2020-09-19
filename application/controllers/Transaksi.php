@@ -10,6 +10,7 @@
             $this->load->model('Model_transaksi');
             $this->load->model('Model_group_access');
             $this->load->library('pdf');
+            $this->load->library('csvimport');
         }
         
         function index(){
@@ -329,9 +330,9 @@
         
             $insert = $this->Model_transaksi->submit_unggah_surat($data);
             if($insert > 0){
-                $this->session->set_flashdata('pesan', 'Dokumen Berhasil Terikirim');
+                $this->session->set_flashdata('pesan', 'Dokumen Berhasil Terkirim');
             } else {
-                $this->session->set_flashdata('pesan', 'Dokumen Tidak Berhasil Terikirim');
+                $this->session->set_flashdata('pesan', 'Dokumen Tidak Berhasil Terkirim');
             }
             redirect('transaksi/upload_surat');
         }
@@ -471,6 +472,130 @@
                 $pdf->Cell(55,7,$row->NMKEL,1,1,'C'); 
             }
             $pdf->Output();
+        }                
+        
+        function exportCSV($prov,$kab,$kec,$kel,$ket_tambahan,$nik,$nama){
+            //get parameter            
+            $prov = ($prov!="")?str_replace("%20", " ", $prov):"";
+            $kab = ($kab!="0")?str_replace("%20", " ", $kab):"";
+            $kec = ($kec!="0")?str_replace("%20", " ", $kec):"";
+            $kel = ($kel!="0")?str_replace("%20", " ", $kel):"";
+            $ket_tambahan = ($ket_tambahan!="0")?$ket_tambahan:"";
+            $nik = ($nik!="0")?$nik:"";
+            $nama = ($nama!="0")?$nama:"";
+
+            $provName = str_replace(" ", "_", $prov);
+            $kabName = ($kab!="0") ? str_replace(" ", "_", $kab) : "All";
+            
+            // get data
+            $myData = $this->Model_transaksi->showData($prov,$kab,$kec,$kel,$ket_tambahan,$nik,$nama)->result();
+
+            // file name
+            $filename = 'Data_Ganda_Penerima_Bantuan_'.$provName.'_'.$kabName.'.csv';
+            header("Content-Description: File Transfer");
+            header("Content-Disposition: attachment; filename=$filename");
+            header("Content-Type: application/csv; ");
+
+            $delimiter = ",";
+            // file creation
+            $file = fopen('php://output', 'w');
+
+            $header = array("NO KARTU","NIK KTP","IDARTBDT","ID KELUARGA","NO KK","NAMA PENERIMA","PROPINSI","KABUPATEN","KECAMATAN","KELURAHAN","STATUS");
+            fputcsv($file, $header, $delimiter);
+
+            foreach ($myData as $line){
+                fputcsv($file,
+                        array
+                        (
+                            $line->NOMOR_KARTU,
+                            $line->NIK_KTP,
+                            $line->IDARTBDT,
+                            $line->IDKELUARGA,
+                            $line->NOKK_DTKS,
+                            $line->NAMA_PENERIMA,
+                            $line->NMPROP,
+                            $line->NMKAB,
+                            $line->NMKEC,
+                            $line->NMKEL,
+                            $line->KET_TAMBAHAN
+                        ),$delimiter
+                       );
+            }
+
+            fclose($file);
+            exit;
+
+        }
+        
+        function upload_data_revisi(){
+            if(!$this->session->userdata('logged_in'))
+            {
+                $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
+                $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
+                redirect('login');
+            }
+            
+            $session_data = $this->session->userdata('logged_in');            
+            $data['nama_pengguna'] = $session_data['nama_pengguna'];
+            $data['username'] = $session_data['username'];
+            $data['group_pengguna'] = $session_data['group_pengguna'];
+            $data['provinsi_pengguna'] = $session_data['provinsi'];
+            
+            $data['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
+            $data['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
+            $data['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();
+            
+            $data['menu'] = $data['menu_group_transaksi'][0]->module_name;
+            $data['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();
+            $this->load->view('transaksi/upload_data_ganda_revisi', $data);
+        }        
+        
+        public function submit_upload_data_ganda_revisi(){
+            $provinsi = $this->input->post('provinsi');
+            $kab_kota = $this->input->post('kab_kotax');
+            $filename = "data_perbaikan";
+            $upload = $this->Model_transaksi->upload_file($filename);            
+            
+            $file_data = $this->csvimport->get_array($_FILES["data_perbaikan"]["tmp_name"]);
+            
+            $data = array();
+            foreach($file_data as $row){
+                $no_kartu = $row["NO KARTU"];
+                $nik_ktp = $row["NIK KTP"];
+                $idartbdt = $row["IDARTBDT"];
+                $id_keluarga = $row["ID KELUARGA"];
+                $no_kk = $row["NO KK"];
+                $nm_penerima = $row["NAMA PENERIMA"];
+                $provinsi = $row["PROPINSI"];
+                $kabupaten = $row["KABUPATEN"];
+                $kecamatan = $row["KECAMATAN"];
+                $kelurahan = $row["KELURAHAN"];
+                $status_update = $row["STATUS"];
+
+                array_push($data, array(
+                    'IDARTBDT' => $idartbdt,
+                    'NIK_KTP' => $nik_ktp,
+                    'NOMOR_KARTU' => $no_kartu,
+                    'IDKELUARGA' => $id_keluarga,
+                    'NOKK_DTKS' => $no_kk,
+                    'NAMA_PENERIMA' => $nm_penerima,
+                    'NMPROP' => $provinsi,
+                    'NMKAB' => $kabupaten,
+                    'NMKEC' => $kecamatan,
+                    'NMKEL' => $kelurahan,
+                    'KET_TAMBAHAN' => $status_update
+                ));
+            }
+            
+            //$this->db->update_batch('data_ganda', $data2, 'IDARTBDT');
+            $update = $this->Model_transaksi->update_data_multiple($data);
+            echo $update;
+            if($update > 0){
+                $this->session->set_flashdata('pesan', 'Data Berhasil di Update');
+            } else {
+                $this->session->set_flashdata('pesan', 'Data Gagal di Update');
+            }
+            redirect("transaksi/upload_data_revisi");           
         }
     }
     

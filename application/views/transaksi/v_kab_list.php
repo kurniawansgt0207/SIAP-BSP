@@ -1,5 +1,5 @@
 <?php ini_set('display_errors','off'); ?>
-<select name="kab_kota" id="kab_kota" class="form-control select2" onchange="list_of_kec()">
+<select name="kab_kota" id="kab_kota" class="form-control form-control-sm select2" onchange="list_of_kec()">
     <option></option>
     <?php
         foreach($kab_kota as $kab){
