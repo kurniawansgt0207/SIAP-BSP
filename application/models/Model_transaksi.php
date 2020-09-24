@@ -200,7 +200,7 @@
             if($prop != "" && $kab != ""){
                 $sql .= "WHERE a.nm_propinsi='$prop' AND a.nm_kabupaten='$kab'";
             }
-            echo $sql .= " AND status_permohonan IN ($status)";
+            $sql .= " AND status_permohonan IN ($status)";
             
             $query = $this->db->query($sql);
             return $query;

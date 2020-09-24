@@ -78,7 +78,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label>Upload Surat Permohonan</label>
-                                                <textarea cols="100" rows="10"><?php echo $alasan_tolak;?></textarea>
+                                                <textarea class="form-control form-control-sm" cols="50" rows="4"><?php echo $alasan_tolak;?></textarea>
                                             </div>
                                             <div class="form-group">
                                                 <label>Upload Surat Permohonan</label>
