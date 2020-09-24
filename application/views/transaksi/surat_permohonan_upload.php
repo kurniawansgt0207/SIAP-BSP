@@ -18,7 +18,7 @@
                 <div class="container-fluid">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Unggah Surat Permohonan Validasi Data Ganda</h6>
+                            <h6 class="m-0 font-weight-bold text-primary">Upload Surat Permohonan Validasi Data Ganda</h6>
                         </div>
                         
                         <div class="card-body p-4" style="margin-top:-35px">
@@ -52,11 +52,24 @@
                                                 <div id="list_kab">--Pilih Kabupaten/Kota--</div>                                               
                                             </div>
                                             <div class="form-group">
-                                                <label>Unggah Surat Permohonan</label>
+                                                <label>No Register (Upload Data Perbaikan)</label>
+                                                <select name="noregister" id="noregister" class="form-control form-control-sm select1">  
+                                                    <option></option>
+                                                    <?php
+                                                        foreach($noregister as $noreg){
+                                                    ?>
+                                                    <option value="<?php echo $noreg->NO_REGISTER;?>"><?php echo $noreg->NO_REGISTER;?></option>
+                                                    <?php
+                                                        }
+                                                    ?>
+                                                </select>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Upload Surat Permohonan</label>
                                                 <input type="file" class="form-control form-control-sm" id="surat_permohonan" name="surat_permohonan" accept="application/pdf">
                                             </div>
                                             <div class="form-group">
-                                                <label>Unggah Lampiran Dokumen</label>
+                                                <label>Upload Lampiran Dokumen</label>
                                                 <input type="file" class="form-control form-control-sm" id="lampiran_dokumen" name="lampiran_dokumen" accept="application/pdf">
                                             </div>
                                             <div class="form-group">                                                

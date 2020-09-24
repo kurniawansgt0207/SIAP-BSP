@@ -29,10 +29,10 @@
                                     <?php
                                         $message = $this->session->flashdata('pesan');
                                         echo $message;
-                                        echo form_open_multipart('transaksi/submit_upload_data_ganda_revisi');
+                                        echo form_open_multipart('transaksi/uploadExcel');
                                     ?>
                                     </div>
-                                        <form class="user" name="frmUploadData" action="<?php echo base_url();?>transaksi/submit_upload_data_ganda_revisi">
+                                        <form class="user" name="frmUploadData" action="<?php echo base_url();?>transaksi/uploadExcel">
                                             <div class="form-group">
                                                 <label>Provinsi</label>
                                                 <select name="provinsi" id="provinsi" class="form-control form-control-sm select1" onchange="list_of_kab()">  
@@ -52,8 +52,8 @@
                                                 <div id="list_kab">--Pilih Kabupaten/Kota--</div>                                               
                                             </div>
                                             <div class="form-group">
-                                                <label>Unggah Data Perbaikan</label>
-                                                <input type="file" class="form-control form-control-sm" id="data_perbaikan" name="data_perbaikan" accept="application/csv">
+                                                <label>Upload Data Ganda Perbaikan</label>
+                                                <input type="file" class="form-control form-control-sm" id="data_perbaikan" name="data_perbaikan" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel">
                                             </div>
                                             <div class="form-group">                                                
                                                 <input type="submit" value="Kirim Data" name="btn_kirim" id="btn_kirim" class="btn btn-sm btn-default btn-info">                                                

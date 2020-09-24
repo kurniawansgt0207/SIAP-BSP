@@ -25,6 +25,7 @@
             $result['username'] = $session_data['username'];
             $result['group_pengguna'] = $session_data['group_pengguna'];
             $result['provinsi_pengguna'] = $session_data['provinsi'];
+            $result['kabupaten_pengguna'] = $session_data['kabupaten'];
                         
             $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
             $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
@@ -72,6 +73,7 @@
             $result['username'] = $session_data['username'];
             $result['group_pengguna'] = $session_data['group_pengguna'];
             $result['provinsi_pengguna'] = $session_data['provinsi'];
+            $result['kabupaten_pengguna'] = $session_data['kabupaten'];
                         
             $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
             $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();

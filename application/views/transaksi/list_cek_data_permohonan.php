@@ -40,7 +40,7 @@
                                             <td>:</td>
                                             <td>
                                                 <select name="ket_tambahan" id="ket_tambahan" class="form-control">
-                                                    <option value="">--Semua Keterangan--</option>
+                                                    <option value="0">--Semua Keterangan--</option>
                                                     <option value="CLEAN" <?php echo ($keterangan=="CLEAN") ? "selected" : "";?>>CLEAN</option>
                                                     <option value="UNCLEAN" <?php echo ($keterangan=="UNCLEAN") ? "selected" : "";?>>UNCLEAN</option>
                                                     <option value="NONAKTIF"  <?php echo ($keterangan=="NONAKTIF") ? "selected" : "";?>>NON AKTIF</option>
@@ -52,8 +52,9 @@
                                             <td></td>
                                             <td>
                                                 <input type="button" class="btn btn-sm btn-info" name="btn_cari" id="btn_cari" value="Tampilkan Data" onclick="showData()">
-                                                <input type="button" class="btn btn-sm btn-success" name="btn_download" id="btn_download" value="Download Data" onclick="downloadData()">
-                                                <input type="button" class="btn btn-sm btn-primary" name="btn_update" id="btn_update" value="Update Status" onclick="updateStatus()">
+                                                <input type="button" class="btn btn-sm btn-warning" name="btn_back" id="btn_back" value="Kembali ke Daftar" onclick="backPage()">
+                                                <!--<input type="button" class="btn btn-sm btn-success" name="btn_download" id="btn_download" value="Download Data" onclick="downloadData()">
+                                                <input type="button" class="btn btn-sm btn-primary" name="btn_update" id="btn_update" value="Update Status" onclick="updateStatus()">-->
                                             </td>
                                         </tr>
                                         <input type="hidden" name="propinsi" id="propinsi" value="<?php echo $nm_propinsi;?>">
@@ -72,7 +73,8 @@
                                             <th class="th-sm text-center">ID ART BDT</th>
                                             <th class="th-sm text-center">KECAMATAN</th>
                                             <th class="th-sm text-center">KELURAHAN</th>
-                                            <th class="th-sm text-center">KETERANGAN</th>
+                                            <th class="th-sm text-center">STATUS ASAL</th>
+                                            <th class="th-sm text-center">STATUS BARU</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -90,6 +92,7 @@
                                             <td><?php echo ucwords(strtolower($data->NMKEC));?></td>
                                             <td><?php echo ucwords(strtolower($data->NMKEL));?></td>
                                             <td><?php echo ucwords(strtolower($data->KET_TAMBAHAN));?></td>                    
+                                            <td><?php echo ucwords(strtolower($data->STATUS_BARU));?></td>                    
                                         </tr>
                                         <?php
                                             }
@@ -115,7 +118,7 @@
     <?php $this->load->view("_partials/js.php") ?>
     <script>
         function showData(){            
-            window.location = "<?php echo base_url()?>transaksi/cek_data_permohonan/<?php echo $id_surat;?>/"+document.getElementById('ket_tambahan').value;
+            window.location = "<?php echo base_url()?>transaksi/cek_data_permohonan/<?php echo $id_surat;?>/<?php echo $id_upload;?>/"+document.getElementById('ket_tambahan').value;
         }
         
         function downloadData(){
@@ -127,6 +130,10 @@
         
         function updateStatus(){
             window.location = "<?php echo base_url()?>transaksi/rubah_status_permohonan/<?php echo $id_surat;?>";
+        }
+        
+        function backPage(){
+            window.location = "<?php echo base_url()?>transaksi/daftar_surat";
         }
     </script>
 </body>

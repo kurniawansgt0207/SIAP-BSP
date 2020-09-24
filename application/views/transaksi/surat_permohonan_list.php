@@ -111,6 +111,36 @@
 
             }); 
         }
+        
+        function exportExcel(idupload,provinsi,kabupaten){
+            alert("Export to Excel File");           
+            var prov = provinsi;
+            var kab = kabupaten;
+            var kec = "";
+            var kel = "";
+            var ket = "";
+            var nik = "";
+            var nama = "";
+            
+            var kab2 = (kab!="") ? kab : "0";
+            var kec2 = (kec!="") ? kec : "0";
+            var kel2 = (kel!="") ? kel : "0";
+            var ket2 = (ket!="") ? ket : "0";
+            var nik2 = (nik!="") ? nik : "0";
+            var nama2 = (nama!="") ? nama : "0";
+            
+            var url = "<?php echo base_url()?>transaksi/exportExcel/"+prov+"/"+kab2+"/"+kec2+"/"+kel2+"/"+ket2+"/"+nik2+"/"+nama2+"/"+idupload+"/B";
+            
+            var myWindow = window.open(url, "_blank");            
+        }
+        
+        function revisiPermohonan(idpermohonan){
+            window.location = "<?php echo base_url()?>transaksi/revisi_surat_permohonan/"+idpermohonan;
+        }
+        
+        function updateStatus(idsurat){            
+            window.location = "<?php echo base_url()?>transaksi/rubah_status_permohonan/"+idsurat;
+        }
     </script>
 </body>
 </html>

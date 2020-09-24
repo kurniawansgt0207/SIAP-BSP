@@ -45,19 +45,16 @@
                                             <div class="form-group">
                                                 <label>Status</label>
                                                 <div class="radio">
-                                                    <label style="cursor: pointer"><input type="radio" name="status_surat" id="status_surat" value="1" style="cursor: pointer" onclick="activeAlasan('1')">&nbsp;Terima</label>
-                                                </div>
-                                                <div class="radio">
-                                                    <label style="cursor: pointer"><input type="radio" name="status_surat" id="status_surat" value="0" style="cursor: pointer" onclick="activeAlasan('0')">&nbsp;Tolak</label>
+                                                    <label style="cursor: pointer"><input type="radio" name="status_surat" id="status_surat" value="0" style="cursor: pointer" checked>&nbsp;Tolak</label>
                                                 </div>
                                             </div>
                                             <div class="form-group">
                                                 <label>Alasan ditolak</label>
-                                                <textarea class="form-control form-control-sm" id="alasan_tolak" name="alasan_tolak" disabled cols="20" rows="5"></textarea>
+                                                <textarea class="form-control form-control-sm" id="alasan_tolak" name="alasan_tolak" cols="20" rows="5"></textarea>
                                             </div>
                                             <div class="form-group">
                                                 <label>Nama Pengecek</label>
-                                                <input type="text" class="form-control form-control-sm" id="nm_pengecek" name="nm_pengecek" value="">
+                                                <input type="text" class="form-control form-control-sm" id="nm_pengecek" name="nm_pengecek" value="<?php echo $nama_pengguna;?>">
                                             </div>
                                             <div class="form-group">                                                
                                                 <!--<a href="<?php echo base_url().'transaksi/daftar_surat';?>" class="btn btn-sm btn-icon-split">

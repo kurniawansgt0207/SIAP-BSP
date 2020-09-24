@@ -13,8 +13,7 @@
 
         // fungsi utama pada class login
         function index()
-        {
-
+        {            
             if ($this->input->post('tombol_login')){
 
                 $this->form_validation->set_rules('username', 'Username', 'trim|required');
@@ -54,7 +53,8 @@
                         'username' => $row->username,
                         'nama_pengguna' => $row->fullname,
                         'group_pengguna' => $row->group_user,
-                        'provinsi' => $row->provinsi
+                        'provinsi' => $row->provinsi,
+                        'kabupaten' => $row->kabupaten
                     );
                     $this->session->set_userdata('logged_in', $sess_array);
                 }
