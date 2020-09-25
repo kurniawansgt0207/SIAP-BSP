@@ -32,10 +32,16 @@
                         <a href="<?php echo base_url()?>uploads/<?php echo $data_surat->nm_surat_permohonan;?>" target="_blank" title="<?php echo $data_surat->nm_surat_permohonan;?>">
                             [Lihat Surat]
                         </a>
+                        <?php
+                            if($data_surat->nm_lampiran_dokumen!=""){
+                        ?>    
                         <br>
                         <a href="<?php echo base_url()?>uploads/<?php echo $data_surat->nm_lampiran_dokumen;?>" target="_blank" title="<?php echo $data_surat->nm_lampiran_dokumen;?>">
                             [Lihat Lampiran]
                         </a>
+                        <?php
+                            }
+                        ?>
                     </td>
                     <td class="text-nowrap" align="center">
                         <?php
