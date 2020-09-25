@@ -37,7 +37,7 @@
                         <a href="#<?php echo $data_ganda->IDARTBDT;?>" id="nonaktif<?php echo $data_ganda->IDARTBDT;?>" onclick="updatestatus('<?php echo $data_ganda->IDARTBDT;?>','NONAKTIF','<?php echo $data_ganda->NMPROP;?>','<?php echo $data_ganda->NMKAB;?>')" title="Non Aktif">[X]</a> | 
                         <a href="#<?php echo $data_ganda->IDARTBDT;?>" id="clean<?php echo $data_ganda->IDARTBDT;?>" onclick="updatestatus('<?php echo $data_ganda->IDARTBDT;?>','CLEAN','<?php echo $data_ganda->NMPROP;?>','<?php echo $data_ganda->NMKAB;?>')" title="Clean">[V]</a>                         
                         
-                        <?php echo anchor('transaksi/rubah_data_ganda/'.$data_ganda->IDARTBDT,'[Rubah]'); ?>
+                        <?php echo anchor('transaksi/rubah_data_ganda/'.$data_ganda->IDARTBDT.'/IDT','[Rubah]'); ?>
                     </td>
                 </tr>
                 <?php /*<tr>

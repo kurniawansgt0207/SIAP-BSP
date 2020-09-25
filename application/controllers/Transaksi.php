@@ -105,7 +105,7 @@
             echo "Data berhasil di update~Propinsi: ".$postData['prop']."\nKabupate/Kota: ".$postData['kab']."\nClean: ".$jmlClean."\nUnclean: ".$jmlUnClean."\nNon Aktif: ".$jmlNonAktif;
         }
                         
-        function rubah_data_ganda($id){
+        function rubah_data_ganda($id,$tipe){
             if(!$this->session->userdata('logged_in'))
             {
                 $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
@@ -125,9 +125,14 @@
             $data['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();
             
             $prefixTbl = $this->db->dbprefix;
+            if($tipe=='KEL'){
+                $table = $prefixTbl."data_ganda";
+            } elseif($tipe=='IDT'){
+                $table = $prefixTbl."data_ganda_identik";
+            }
             $data['menu'] = $data['menu_group_transaksi'][0]->module_name;
             $where = array('IDARTBDT' => $id);
-            $data['user'] = $this->Model_transaksi->edit_data($where,$prefixTbl.'data_ganda')->result();
+            $data['user'] = $this->Model_transaksi->edit_data($where,$table)->result();
             $data['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();            
             $prov = $data['user'][0]->NMPROP;
             $data['kab_kota'] = $this->Model_transaksi->getKabKota($prov,$session_data['kabupaten'])->result();
@@ -135,6 +140,7 @@
             $data['kecamatan'] = $this->Model_transaksi->getKecamatan($kab)->result();
             $kec = $data['user'][0]->NMKEC;
             $data['kelurahan'] = $this->Model_transaksi->getKelDesa($kec)->result();
+            $data['tipe_data'] = $tipe;
             
             $this->load->view('transaksi/edit_data',$data);
 	}
@@ -165,11 +171,12 @@
             $nik = isset($postData['nik'])?$postData['nik']:'';
             $nama = isset($postData['nama'])?$postData['nama']:'';
 
-            $result['data'] = $this->Model_transaksi->showData($prov,$kab,$kec,$kel,$ket_tambahan,$nik,$nama)->result();      
+            $result['data'] = $this->Model_transaksi->showDataIdentik($prov,$kab,$kec,$kel,$ket_tambahan,$nik,$nama)->result();      
             $this->load->view('transaksi/data_ganda_list_identik', $result);
         }
         
         function update(){
+            $tipe_data = $this->input->post('tipe_data');
             $nama_penerima = $this->input->post('nm_penerima');
             $no_kartu = $this->input->post('no_kartu');
             $nik_ktp = $this->input->post('nik_ktp');
@@ -208,7 +215,12 @@
             );
 
             $prefixTbl = $this->db->dbprefix;
-            $this->Model_transaksi->update_data($where,$data,$prefixTbl.'data_ganda');
+            if($tipe_data=="KEL"){
+                $table = $prefixTbl."data_ganda";
+            } elseif($tipe_data=="IDT"){
+                $table = $prefixTbl."data_ganda_identik";
+            }
+            $this->Model_transaksi->update_data($where,$data,$table);
             redirect('transaksi/index');
         }
         

@@ -7,7 +7,7 @@
             $sql .= ($param1 != '') ? " AND NMPROP='".$param1."' " : "";
             $sql .= ($param2 != '') ? " AND NMKAB='".$param2."' " : "";
             $sql .= ($param3 != '') ? " AND NMKEC='".$param3."' " : "";
-            $sql .= ($param4 != '') ? " AND NMKELP='".$param4."' " : "";
+            $sql .= ($param4 != '') ? " AND NMKEL='".$param4."' " : "";
             $sql .= ($param5 != '') ? " AND KET_TAMBAHAN='".$param5."' " : "";
             $sql .= ($param6 != '') ? " AND NIK_KTP LIKE '%".$param6."%' " : "";
             $sql .= ($param7 != '') ? " AND NAMA_PENERIMA LIKE '%".$param7."%' " : "";
@@ -23,7 +23,7 @@
             $sql .= ($param1 != '') ? " AND NMPROP='".$param1."' " : "";
             $sql .= ($param2 != '') ? " AND NMKAB='".$param2."' " : "";
             $sql .= ($param3 != '') ? " AND NMKEC='".$param3."' " : "";
-            $sql .= ($param4 != '') ? " AND NMKELP='".$param4."' " : "";
+            $sql .= ($param4 != '') ? " AND NMKEL='".$param4."' " : "";
             $sql .= ($param5 != '') ? " AND KET_TAMBAHAN='".$param5."' " : "";
             $sql .= ($param6 != '') ? " AND NIK_KTP LIKE '%".$param6."%' " : "";
             $sql .= ($param7 != '') ? " AND NAMA_PENERIMA LIKE '%".$param7."%' " : "";
