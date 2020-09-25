@@ -25,7 +25,7 @@
                                 <div class="col-lg-6">
                                     <div class="p-4">
                                         <form class="user" name="frmEditDataGanda" method="post" action="<?php echo base_url().'transaksi/update'; ?>">
-                                            <input type="text" name="tipe_data" id="tipe_data" value="<?php echo $tipe_data;?>">
+                                            <input type="hidden" name="tipe_data" id="tipe_data" value="<?php echo $tipe_data;?>">
                                             <div class="form-group">
                                                 <label>Nama Penerima</label>
                                                 <input type="text" class="form-control form-control-sm" name="nm_penerima" id="nm_penerima" value="<?php echo $user[0]->NAMA_PENERIMA;?>">
