@@ -26,6 +26,7 @@
                                 <div class="col-lg-6">
                                     <div class="p-4">
                                         <form class="user" name="frmDataGandaIdentik" method="post" target="_blank" action="<?php echo base_url();?>transaksi/export_pdf">                                            
+                                            <input type="hidden" name="tipe" id="tipe" value="B">
                                             <div class="form-group">
                                                 <label>Provinsi</label>
                                                 <select name="provinsi" id="provinsi" class="form-control form-control-sm select1" onchange="list_of_kab()">  
@@ -34,7 +35,7 @@
                                                         foreach($provinsi as $prov){
                                                             
                                                     ?>
-                                                    <option value="<?php echo $prov->NMPROVINSI;?>"><?php echo $prov->NMPROVINSI;?></option>
+                                                    <option value="<?php echo $prov->NMPROVINSI;?>"><?php echo $prov->NMPROVINSI." (".number_format($total_data[0]->jmldata).")";?></option>
                                                     <?php
                                                         }
                                                     ?>
@@ -50,12 +51,6 @@
                                                 <input type="hidden" name="kecamatanx" id="kecamatanx" value="">
                                                 <div id="list_kec">--Pilih Kecamatan--</div>
                                             </div>
-                                            <!--<div class="form-group">
-                                                <label>Kelurahan</label>
-                                                <input type="hidden" name="kel_desax" id="kel_desax" value="">
-                                                <div id="list_kel">--Pilih Kelurahan--</div>
-                                            </div>-->                                            
-                                            <input type="hidden" name="kel_desax" id="kel_desax" value="">
                                             <div class="form-group">
                                                 <label>Keterangan</label>
                                                 <select name="ket_tambahan" id="ket_tambahan" class="form-control form-control-sm">
@@ -66,13 +61,23 @@
                                                 </select>
                                             </div>
                                             <div class="form-group">
+                                                <label>Urutkan berdasarkan</label>
+                                                <select name="orderby" id="orderby" class="form-control form-control-sm">                                                    
+                                                    <option value="NAMA_PENERIMA">NAMA PENERIMAN</option>
+                                                    <option value="NOMOR_KARTU">NO KARTU</option>
+                                                    <option value="NIK_KTP">NIK KTP</option>
+                                                    <option value="IDKELUARGA">ID KELUARGA</option>
+                                                    <option value="KET_TAMBAHAN">STATUS</option>
+                                                </select>
+                                            </div>
+                                            <!--<div class="form-group">
                                                 <label>NIK Penerima</label>
                                                 <input type="text" class="form-control form-control-sm" id="nik" name="nik" placeholder="NIK KTP">
                                             </div>
                                             <div class="form-group">
                                                 <label>Nama Penerima</label>
                                                 <input type="text" class="form-control form-control-sm" id="nama" name="nama" placeholder="Nama Penerima">
-                                            </div>
+                                            </div>-->
                                             <div class="form-group">
                                                 <input type="button" value="Cari Data" name="btn_submit" id="btn_submit" onclick="cari()" class="btn btn-sm btn-primary">
                                                 <input type="submit" value="Cetak Data" name="btn_cetak" id="btn_cetak" class="btn btn-sm btn-default btn-danger">                                                
@@ -103,12 +108,15 @@
         //$("#list_data_ganda").load("<?php echo base_url()?>transaksi/list_data");
 
         function list_of_kab(){
-            var prov = document.getElementById('provinsi').value;                        
+            var tipe = document.getElementById('tipe').value;
+            var prov = document.getElementById('provinsi').value;    
+            var menu = "transaksi";
+            var tipe = "B";
             var url = "<?php echo base_url()?>transaksi/list_of_kab";
 
             $.ajax({
                 type:"POST",
-                data:{prov:prov},
+                data:{tipe:tipe,prov:prov,menu:menu},
                 url:url,
                 success:function(data){ 
                      if(data){
@@ -120,13 +128,15 @@
         }
 
         function list_of_kec(){
+            var tipe = document.getElementById('tipe').value;
+            var prov = document.getElementById('provinsi').value;
             var kab = document.getElementById('kab_kota').value;
             document.getElementById('kab_kotax').value = kab;
             var url = "<?php echo base_url()?>transaksi/list_of_kec";
 
             $.ajax({
                 type:"POST",
-                data:{kab:kab},
+                data:{tipe:tipe,prov:prov,kab:kab},
                 url:url,
                 success:function(data){ 
                      if(data){
@@ -161,34 +171,37 @@
         }
 
         function cari(){
+            var tipe = document.getElementById('tipe').value;
             var prov = document.getElementById('provinsi').value;
             var kab = document.getElementById('kab_kotax').value;
             var kec = document.getElementById('kecamatanx').value;
-            var kel = document.getElementById('kel_desax').value;
+            var order = document.getElementById('orderby').value;
             var ket = document.getElementById('ket_tambahan').value;
-            var nik = document.getElementById('nik').value;
-            var nama = document.getElementById('nama').value;            
+            var nik = "";
+            var nama = "";
             var url = "<?php echo base_url()?>transaksi/list_data_identik";                        
-            
+            document.getElementById('btn_submit').disabled=true;
             $.ajax({
                 type:"POST",
-                data:{prov:prov,kab:kab,kec:kec,kel:kel,ket:ket,nik:nik,nama:nama},
+                data:{tipe:tipe,prov:prov,kab:kab,kec:kec,order:order,ket:ket,nik:nik,nama:nama},
                 url:url,
                 success:function(data){ 
                     if(data){
                         $('#list_data_ganda').html(data); 
+                        document.getElementById('btn_submit').disabled=false;
                     }
                 }   
 
             }); 
         }      
         
-        function updatestatus(id,status,prop,kab){
+        function updatestatus(id,status,prop,kab){            
+            var tipe = document.getElementById('tipe').value;
             var url = "<?php echo base_url();?>transaksi/update_status";                        
             
             $.ajax({
                 type:"POST",
-                data:{id:id,status:status,prop:prop,kab:kab},
+                data:{id:id,status:status,prop:prop,kab:kab,tipe:tipe},
                 url:url,
                 success:function(data){ 
                     if(data){
@@ -227,29 +240,26 @@
         
         function exportExcel(){
             alert("Export to Excel File");
+            var tipe = document.getElementById('tipe').value;
             var prov = document.getElementById('provinsi').value;
             var kab = document.getElementById('kab_kotax').value;
             var kec = document.getElementById('kecamatanx').value;
-            var kel = document.getElementById('kel_desax').value;
+            var order = document.getElementById('orderby').value;
             var ket = document.getElementById('ket_tambahan').value;
-            var nik = document.getElementById('nik').value;
-            var nama = document.getElementById('nama').value; 
-            
+            var nik = "";
+            var nama = ""; 
+            alert(tipe);
             var kab2 = (kab!="") ? kab : "0";
             var kec2 = (kec!="") ? kec : "0";
-            var kel2 = (kel!="") ? kel : "0";
+            var order2 = (order!="") ? order : "0";
             var ket2 = (ket!="") ? ket : "0";
             var nik2 = (nik!="") ? nik : "0";
             var nama2 = (nama!="") ? nama : "0";
             
-            var url = "<?php echo base_url()?>transaksi/exportExcel/"+prov+"/"+kab2+"/"+kec2+"/"+kel2+"/"+ket2+"/"+nik2+"/"+nama2;
+            var url = "<?php echo base_url()?>transaksi/exportExcel/"+prov+"/"+kab2+"/"+kec2+"/"+order2+"/"+ket2+"/"+nik2+"/"+nama2+"/0/"+tipe;
             
-            var myWindow = window.open(url, "_blank");            
+            var myWindow = window.open(url, "_blank");             
         }
     </script>
-<!--    <script src="<?php echo base_url()?>assets/js/select2.js"></script>
-    <script>                
-        $("#provinsi").select2( { placeholder: "Pilih Provinsi", maximumSelectionSize: 6 } );
-    </script>-->
 </body>
 </html>

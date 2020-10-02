@@ -8,9 +8,9 @@
                     <th class="th-sm text-center">NAMA PEMOHON</th>                    
                     <th class="th-sm text-center">PROVINSI<br>(KABUPATEN)</th>
                     <th class="th-sm text-center">DOKUMEN PERMOHONAN</th>
-                    <th class="th-sm text-center">ACC BY DINSOS</th>
-                    <th class="th-sm text-center">ACC BY PROVINSI</th>                    
-                    <th class="th-sm text-center">ACC BY PFM</th>                    
+                    <th class="th-sm text-center">DATA PERBAIKAN</th>
+                    <th class="th-sm text-center">CONFIRM BY PROVINSI</th>                    
+                    <th class="th-sm text-center">CONFIRM BY PFM</th>                    
                     <th class="th-sm text-center">AKSI</th>
                 </tr>
             </thead>
@@ -27,42 +27,15 @@
                 <tr>
                     <td class="text-nowrap" align="center"><?php echo $data_surat->status_permohonan.$tglRejected;?></td>
                     <td class="text-nowrap"><?php echo ucwords(strtolower($data_surat->nm_pemohon));?></td>                    
-                    <td class="text-nowrap" align="center"><?php echo ucwords(strtolower($data_surat->nm_propinsi))."<br>(".ucwords(strtolower($data_surat->nm_kabupaten)).")";?></td>                    
+                    <td class="text-nowrap" align="center"><?php echo ucwords(strtolower($data_surat->nm_propinsi));?></td>                    
                     <td class="text-nowrap" align="center">
                         <a href="<?php echo base_url()?>uploads/<?php echo $data_surat->nm_surat_permohonan;?>" target="_blank" title="<?php echo $data_surat->nm_surat_permohonan;?>">
                             [Lihat Surat]
                         </a>
-                        <?php
-                            if($data_surat->nm_lampiran_dokumen!=""){
-                        ?>    
-                        <br>
-                        <a href="<?php echo base_url()?>uploads/<?php echo $data_surat->nm_lampiran_dokumen;?>" target="_blank" title="<?php echo $data_surat->nm_lampiran_dokumen;?>">
-                            [Lihat Lampiran]
-                        </a>
-                        <?php
-                            }
-                        ?>
                     </td>
                     <td class="text-nowrap" align="center">
-                        <?php
-                            $tglAccDinsos = ($data_surat->tgl_acc_dinsos!="1900-01-01") ? $data_surat->tgl_acc_dinsos : "-";
-                            $byAccDinsos = ($data_surat->acc_dinsos_by!="") ? "<br>(".$data_surat->acc_dinsos_by.")" : "";
-                            if($group_pengguna != "Korda"){
-                                echo $tglAccDinsos.$byAccDinsos."";
-
-                                if($data_surat->status_permohonan=="Open"){
-                        ?><br>
-                        <a href="<?php echo base_url()?>transaksi/approve_surat_permohonan/<?php echo $data_surat->id;?>/NV" title="Setujui Permohonan">[Setuju]</a>
-                        <?php
-                                }
-                            } else {
-                                if($data_surat->status_permohonan!="Open"){
-                                    echo $tglAccDinsos.$byAccDinsos."";
-                                } else {
-                                    echo "Menunggu Persetujuan";
-                                }
-                            }
-                        ?>
+                        CLEAN (<?php echo number_format($data_surat->JML_CLEAN);?>)<br>
+                        NON AKTIF (<?php echo number_format($data_surat->JML_NONAKTIF);?>)
                     </td>
                     <td class="text-nowrap" align="center">
                         <?php
@@ -71,17 +44,16 @@
                             if($group_pengguna != "Korda"){
                                 echo $tglAccProv.$byAccProv."";
 
-                                if($data_surat->status_permohonan=="Need Validation"){
+                                if($data_surat->status_permohonan==""){
                         ?><br>
-                        <a href="<?php echo base_url()?>transaksi/approve_surat_permohonan/<?php echo $data_surat->id;?>/NA" title="Setujui Permohonan">[Setuju]</a>
-                        <a href="#" onclick="updateStatus('<?php echo $data_surat->id;?>')" title="Tolak Permohonan">[Tolak]</a>
+                        <a href="<?php echo base_url()?>transaksi/approve_surat_permohonan/<?php echo $data_surat->id;?>/NA" title="Lihat Data">[Lihat Data]</a>                        
                         <?php
                                 }
                             } else {
                                 if($data_surat->status_permohonan!="Open"){
                                     echo $tglAccProv.$byAccProv."";
                                 } else {
-                                    echo "Menunggu Persetujuan";
+                                    echo "-";
                                 }
                             }
                         ?>
@@ -103,31 +75,13 @@
                                 if($data_surat->status_permohonan!="Open"){
                                     echo $tglAccPfm.$byAccPfm."";
                                 } else {
-                                    echo "Menunggu Persetujuan";
+                                    echo "-";
                                 }
                             }
                         ?>
                     </td>
                     <td class="text-nowrap" align="center">
-                        <?php
-                        if($group_pengguna != "Korda"){
-                            if($data_surat->status_permohonan=="Open" || $data_surat->status_permohonan=="Need Validation" || $data_surat->status_permohonan=="Need Approve"){
-                        ?>
-                        <?php echo anchor('transaksi/cek_data_permohonan/'.$data_surat->id.'/'.$data_surat->idUpload.'/0','Cek Data'); ?>
-                        <?php
-                            }
-                        } else {
-                            if($data_surat->status_permohonan=="Approved"){
-                        ?>
-                        <a href="#" onclick="exportExcel('<?php echo $data_surat->idUpload;?>','<?php echo $data_surat->nm_propinsi;?>','<?php echo $data_surat->nm_kabupaten;?>')" title="Download Data Penerima BSP">[Download Data]</a>
-                        <?php
-                            } elseif($data_surat->status_permohonan=="Rejected"){
-                        ?>
-                        <a href="#" onclick="revisiPermohonan('<?php echo $data_surat->id;?>')" title="Revisi Permohonan">[Revisi Permohonan]</a>
-                        <?php
-                            }                            
-                        }
-                        ?>
+                        <a href="<?php echo base_url();?>transaksi/download_data/<?php echo $data_surat->idUpload;?>" target="_blank" title="Lihat Data Perbaikan">[Lihat Data]</a>
                     </td>
                 </tr>
                 <?php

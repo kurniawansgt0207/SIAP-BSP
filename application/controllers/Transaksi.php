@@ -26,12 +26,14 @@
                 redirect('login');
             }
                         
+            $prefixTbl = $this->db->dbprefix;
             $session_data = $this->session->userdata('logged_in');            
             $result['nama_pengguna'] = $session_data['nama_pengguna'];
             $result['username'] = $session_data['username'];
             $result['group_pengguna'] = $session_data['group_pengguna'];
             $result['provinsi_pengguna'] = $session_data['provinsi'];
             $result['kabupaten_pengguna'] = $session_data['kabupaten'];
+            $where = "NMPROP='".$session_data['provinsi']."' AND ID_UPLOAD='' AND STATUS_DATA=''";
             
             $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
             $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
@@ -39,6 +41,7 @@
             
             $result['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();
             $result['menu'] = $result['menu_group_transaksi'][0]->module_name;
+            $result['total_data'] = $this->Model_transaksi->check_data($prefixTbl.'data_ganda_revisi',$where)->result();
             
             $this->load->view('transaksi/data_ganda', $result);
         }
@@ -51,12 +54,14 @@
                 redirect('login');
             }
                         
+            $prefixTbl = $this->db->dbprefix;
             $session_data = $this->session->userdata('logged_in');            
             $result['nama_pengguna'] = $session_data['nama_pengguna'];
             $result['username'] = $session_data['username'];
             $result['group_pengguna'] = $session_data['group_pengguna'];
             $result['provinsi_pengguna'] = $session_data['provinsi'];
             $result['kabupaten_pengguna'] = $session_data['kabupaten'];
+            $where = "NMPROP='".$session_data['provinsi']."' AND ID_UPLOAD='' AND STATUS_DATA=''";
             
             $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
             $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
@@ -64,6 +69,7 @@
             
             $result['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();
             $result['menu'] = $result['menu_group_transaksi'][0]->module_name;
+            $result['total_data'] = $this->Model_transaksi->check_data($prefixTbl.'data_ganda_revisi_identik',$where)->result();
             
             $this->load->view('transaksi/data_ganda_identik', $result);
         }
@@ -71,18 +77,31 @@
         function list_of_kab(){
             $postData = $this->input->post();
             $session_data = $this->session->userdata('logged_in');
-
+                        
+            $prefixTbl = $this->db->dbprefix;
+            $tipe = isset($postData['tipe'])?$postData['tipe']:'';
             $prov = isset($postData['prov'])?$postData['prov']:'';
+            $menu = isset($postData['menu'])?$postData['menu']:'';
+            
             $kab = $session_data['kabupaten'];
+            $tablename = ($tipe=="A") ? $prefixTbl."data_ganda_revisi" : $prefixTbl."data_ganda_revisi_identik";
+            $where = "NMPROP='$prov' AND NMKAB='$kab'";
             $result['kab_kota'] = $this->Model_transaksi->getKabKota($prov,$kab)->result();
+            $result['total_data'] = $this->Model_transaksi->check_data($tablename,$where)->result();
+            $result['menu'] = $menu;
+            
             $this->load->view('transaksi/v_kab_list', $result);
         }
         
         function list_of_kec(){
             $postData = $this->input->post();
-
+            $tipe = isset($postData['tipe'])?$postData['tipe']:'';
+            $prov = isset($postData['prov'])?$postData['prov']:'';
             $kab = isset($postData['kab'])?$postData['kab']:'';
             $result['kecamatan'] = $this->Model_transaksi->getKecamatan($kab)->result();
+            $result['tipe'] = $tipe;
+            $result['provinsi'] = $prov;
+            $result['kabupaten'] = $kab;
             $this->load->view('transaksi/v_kec_list', $result);
         }
         
@@ -96,9 +115,24 @@
         
         function update_status(){
             $postData = $this->input->post();
+            $prefixTbl = $this->db->dbprefix;
             
-            $this->Model_transaksi->update_status($postData['id'],$postData['status']);
-            $hasil = $this->Model_transaksi->rekap_data_prop_kab($postData['prop'],$postData['kab'])->result();
+            $data = array(
+                'STATUS_BARU' => $postData['status']
+            );
+
+            $where = array(
+                'NOMOR_KARTU' => $postData['id']
+            );
+            
+            if($postData['tipe']=="A"){
+                $table = $prefixTbl."data_ganda_revisi";
+            } elseif($postData['tipe']=="B"){
+                $table = $prefixTbl."data_ganda_revisi_identik";
+            }
+            $this->Model_transaksi->update_data($where,$data,$table);
+            
+            $hasil = $this->Model_transaksi->rekap_data_revisi_prop_kab($table,$postData['prop'],$postData['kab'])->result();
             $jmlClean = $hasil[0]->jml_clean;
             $jmlUnClean = $hasil[0]->jml_unclean;
             $jmlNonAktif = $hasil[0]->jml_nonaktif;
@@ -126,12 +160,12 @@
             
             $prefixTbl = $this->db->dbprefix;
             if($tipe=='KEL'){
-                $table = $prefixTbl."data_ganda";
+                $table = $prefixTbl."data_ganda_revisi";
             } elseif($tipe=='IDT'){
-                $table = $prefixTbl."data_ganda_identik";
+                $table = $prefixTbl."data_ganda_revisi_identik";
             }
             $data['menu'] = $data['menu_group_transaksi'][0]->module_name;
-            $where = array('IDARTBDT' => $id);
+            $where = array('NOMOR_KARTU' => $id);
             $data['user'] = $this->Model_transaksi->edit_data($where,$table)->result();
             $data['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();            
             $prov = $data['user'][0]->NMPROP;
@@ -148,30 +182,56 @@
         function list_data(){
             $postData = $this->input->post();
 
+            $tipe = isset($postData['tipe'])?$postData['tipe']:'';
             $prov = isset($postData['prov'])?$postData['prov']:'';
             $kab = isset($postData['kab'])?$postData['kab']:'';
             $kec = isset($postData['kec'])?$postData['kec']:'';
-            $kel = isset($postData['kel'])?$postData['kel']:'';
+            $order = isset($postData['order'])?$postData['order']:'';
             $ket_tambahan = isset($postData['ket'])?$postData['ket']:'';
             $nik = isset($postData['nik'])?$postData['nik']:'';
             $nama = isset($postData['nama'])?$postData['nama']:'';
+            
+            $prefixTbl = $this->db->dbprefix;
+            if($tipe=='A'){
+                $table = $prefixTbl."data_ganda";
+                $tableRev = $prefixTbl."data_ganda_revisi";
+            } elseif($tipe=='B'){
+                $table = $prefixTbl."data_ganda_identik";
+                $tableRev = $prefixTbl."data_ganda_revisi_identik";
+            }
 
-            $result['data'] = $this->Model_transaksi->showData($prov,$kab,$kec,$kel,$ket_tambahan,$nik,$nama)->result();      
+            $result['data'] = $this->Model_transaksi->showData($prov,$kab,$kec,$order,$ket_tambahan,$nik,$nama)->result();                  
+            $result['rekap'] = $this->Model_transaksi->rekap_data($table,$prov,$kab,$kec)->result();
+            $result['rekap_revisi'] = $this->Model_transaksi->rekap_data_revisi($tableRev,$prov,$kab,$kec)->result();
+            
             $this->load->view('transaksi/data_ganda_list', $result);
         }
         
         function list_data_identik(){
             $postData = $this->input->post();
 
+            $tipe = isset($postData['tipe'])?$postData['tipe']:'';
             $prov = isset($postData['prov'])?$postData['prov']:'';
             $kab = isset($postData['kab'])?$postData['kab']:'';
             $kec = isset($postData['kec'])?$postData['kec']:'';
-            $kel = isset($postData['kel'])?$postData['kel']:'';
+            $order = isset($postData['order'])?$postData['order']:'';
             $ket_tambahan = isset($postData['ket'])?$postData['ket']:'';
             $nik = isset($postData['nik'])?$postData['nik']:'';
             $nama = isset($postData['nama'])?$postData['nama']:'';
+            $prefixTbl = $this->db->dbprefix;
+            $prefixTbl = $this->db->dbprefix;
+            if($tipe=='A'){
+                $table = $prefixTbl."data_ganda";
+                $tableRev = $prefixTbl."data_ganda_revisi";
+            } elseif($tipe=='B'){
+                $table = $prefixTbl."data_ganda_identik";
+                $tableRev = $prefixTbl."data_ganda_revisi_identik";
+            }
 
-            $result['data'] = $this->Model_transaksi->showDataIdentik($prov,$kab,$kec,$kel,$ket_tambahan,$nik,$nama)->result();      
+            $result['data'] = $this->Model_transaksi->showDataIdentik($prov,$kab,$kec,$order,$ket_tambahan,$nik,$nama)->result();      
+            $result['rekap'] = $this->Model_transaksi->rekap_data($table,$prov,$kab,$kec)->result();
+            $result['rekap_revisi'] = $this->Model_transaksi->rekap_data_revisi($tableRev,$prov,$kab,$kec)->result();
+            
             $this->load->view('transaksi/data_ganda_list_identik', $result);
         }
         
@@ -179,95 +239,108 @@
             $tipe_data = $this->input->post('tipe_data');
             $nama_penerima = $this->input->post('nm_penerima');
             $no_kartu = $this->input->post('no_kartu');
+            $no_kk = $this->input->post('no_kk');
             $nik_ktp = $this->input->post('nik_ktp');
-            $id_pengurus = $this->input->post('id_pengurus');
+            $idartbdt = $this->input->post('idartbdt');
             $alamat = $this->input->post('alamat');
             $provinsi = $this->input->post('provinsi');
             $kab_kota = $this->input->post('kab_kota');
             $kecamatan = $this->input->post('kecamatan');
-            $kel_desa = $this->input->post('kel_desa');
-            $idbdt = $this->input->post('idbdt');
-            $idartbdt = $this->input->post('idartbdt');
-            $nmdtks = $this->input->post('nmdtks');
             $idkeluarga = $this->input->post('idkeluarga');
             $ket_tambahan = $this->input->post('ket_tambahan');
+            $status_baru = $this->input->post('status_baru');
 
             $data = array(
                 'NAMA_PENERIMA' => $nama_penerima,
                 'NOMOR_KARTU' => $no_kartu,
-                'NIK_KTP' => $nik_ktp,
-                'ID_PENGURUS' => $id_pengurus,
+                'NIK_KTP' => $nik_ktp,                
+                'NOKK_DTKS' => $no_kk,
+                'IDARTBDT' => $idartbdt,
+                'IDKELUARGA' => $idkeluarga,
                 'NMPROP' => $provinsi,
                 'NMKAB' => $kab_kota,
                 'NMKEC' => $kecamatan,
-                'NMKEL' => $kel_desa,
-                'ALAMAT' => $alamat,
-                'IDBDT' => $idbdt,
-                'IDARTBDT' => $idartbdt,
-                'IDPENGURUS' => $id_pengurus,
-                'NAMA_DTKS' => $nmdtks,
-                'IDKELUARGA' => $idkeluarga,
-                'KET_TAMBAHAN' => $ket_tambahan
+                'ALAMAT' => $alamat,                
+                'KET_TAMBAHAN' => $ket_tambahan,
+                'STATUS_BARU' => $status_baru
             );
 
             $where = array(
-                'IDARTBDT' => $idartbdt
+                'NOMOR_KARTU' => $no_kartu
             );
 
             $prefixTbl = $this->db->dbprefix;
             if($tipe_data=="KEL"){
-                $table = $prefixTbl."data_ganda";
+                $table = $prefixTbl."data_ganda_revisi";
+                $page = "index";
             } elseif($tipe_data=="IDT"){
-                $table = $prefixTbl."data_ganda_identik";
+                $table = $prefixTbl."data_ganda_revisi_identik";
+                $page = "ganda_identik";
             }
             $this->Model_transaksi->update_data($where,$data,$table);
-            redirect('transaksi/index');
+            redirect('transaksi/'.$page);
         }
         
         function export_pdf(){
             $postData = $this->input->post();
 
+            $tipe = isset($postData['tipe'])?$postData['tipe']:'';
             $prov = isset($postData['provinsi'])?$postData['provinsi']:'';
             $kab = isset($postData['kab_kotax'])?$postData['kab_kotax']:'';
             $kec = isset($postData['kecamatanx'])?$postData['kecamatanx']:'';
-            $kel = isset($postData['kel_desax'])?$postData['kel_desax']:'';
+            $order = isset($postData['orderby'])?$postData['orderby']:'';
             $ket_tambahan = isset($postData['ket_tambahan'])?$postData['ket_tambahan']:'';
-            $nik = isset($postData['nik'])?$postData['nik']:'';
-            $nama = isset($postData['nama'])?$postData['nama']:'';
+            $nik = '';
+            $nama = '';
+            
+            $title = ($tipe=="A") ? "DAFTAR DATA GANDA KELUARGA PENERIMA BSP" : "DAFTAR DATA GANDA IDENTIK PENERIMA BSP";
             
             $pdf = new FPDF('L','mm','Legal');
             // membuat halaman baru
             $pdf->AddPage();
-            $pdf->SetLeftMargin(5);       
+            $pdf->SetLeftMargin(10);       
             $pdf->SetAutoPageBreak(20, 4);
             // setting jenis font yang akan digunakan
-            $pdf->SetFont('Arial','B',16);
+            $pdf->SetFont('Courier','B',16);
             // mencetak string 
-            $pdf->Cell(330,7,'DATA GANDA PENERIMA BANTUAN (BSP)',0,1,'C');         
+            $pdf->Cell(330,7,$title,0,1,'C');   
+            $pdf->Cell(10,7,'',0,1);
+            $pdf->SetFont('Courier','B',12);
+            $pdf->Cell(110,7,'PROPINSI: '.$prov,0,0,'C');         
+            $pdf->Cell(110,7,'KABUPATEN: '.$kab,0,0,'C');                
+            $pdf->Cell(110,7,'KECAMATAN: '.$kec,0,0,'C');                
             // Memberikan space kebawah agar tidak terlalu rapat
             $pdf->Cell(10,7,'',0,1);            
             
             $pdf->SetFont('Arial','B',10);
-            $pdf->Cell(35,8,'NO KARTU',1,0);
-            $pdf->Cell(35,8,'NIK KTP',1,0);
-            $pdf->Cell(63,8,'NAMA PENERIMA',1,0);            
-            $pdf->Cell(45,8,'PROPINSI',1,0);
-            $pdf->Cell(45,8,'KABUPATEN',1,0);
-            $pdf->Cell(45,8,'KECAMATAN',1,0);
-            $pdf->Cell(50,8,'KELURAHAN',1,0);
-            $pdf->Cell(27,8,'KETERANGAN',1,1);
+            $pdf->Cell(15,8,'NO',1,0,'C');
+            $pdf->Cell(35,8,'NO KARTU',1,0,'C');
+            $pdf->Cell(40,8,'NO KK',1,0,'C');
+            $pdf->Cell(40,8,'ID KELUARGA',1,0,'C');
+            $pdf->Cell(35,8,'NIK KTP',1,0,'C');
+            $pdf->Cell(40,8,'ID ART BDT',1,0,'C');
+            $pdf->Cell(75,8,'NAMA PENERIMA',1,0,'C');
+            $pdf->Cell(27,8,'STATUS',1,0,'C');
+            $pdf->Cell(27,8,'STATUS BARU',1,1,'C');
             $pdf->SetFont('Arial','',10);
            
-            $result = $this->Model_transaksi->showData($prov,$kab,$kec,$kel,$ket_tambahan,$nik,$nama)->result(); 
+            $no = 1;
+            if($tipe=="A"){
+                $result = $this->Model_transaksi->showData($prov,$kab,$kec,$order,$ket_tambahan,$nik,$nama)->result(); 
+            } else {
+                $result = $this->Model_transaksi->showDataIdentik($prov,$kab,$kec,$order,$ket_tambahan,$nik,$nama)->result(); 
+            }
             foreach ($result as $row){
-                $pdf->Cell(35,7,$row->NOMOR_KARTU,1,0);
-                $pdf->Cell(35,7,$row->NIK_KTP,1,0);
-                $pdf->Cell(63,7,$row->NAMA_PENERIMA,1,0);  
-                $pdf->Cell(45,7,$row->NMPROP,1,0); 
-                $pdf->Cell(45,7,$row->NMKAB,1,0); 
-                $pdf->Cell(45,7,$row->NMKEC,1,0); 
-                $pdf->Cell(50,7,$row->NMKEL,1,0); 
-                $pdf->Cell(27,7,$row->KET_TAMBAHAN,1,1); 
+                $pdf->Cell(15,7,$no,1,0,'C');
+                $pdf->Cell(35,7,$row->NOMOR_KARTU,1,0,'C');
+                $pdf->Cell(40,7,$row->NOKK_DTKS,1,0,'C');
+                $pdf->Cell(40,7,$row->IDKELUARGA,1,0,'C');
+                $pdf->Cell(35,7,$row->NIK_KTP,1,0,'C');
+                $pdf->Cell(40,7,$row->IDARTBDT,1,0,'C');
+                $pdf->Cell(75,7,$row->NAMA_PENERIMA,1,0,'L');
+                $pdf->Cell(27,7,$row->KET_TAMBAHAN,1,0,'C'); 
+                $pdf->Cell(27,7,'',1,1,'C'); 
+                $no++;
             }
             $pdf->Output();
         }
@@ -335,7 +408,7 @@
             $this->load->view('transaksi/surat_permohonan_view', $data);
         }
         
-        function upload_surat(){
+        function upload_pengesahan(){
             if(!$this->session->userdata('logged_in'))
             {
                 $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
@@ -354,26 +427,76 @@
             $data['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
             $data['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();            
             
-            $data['menu'] = "surat_permohonan";
+            $data['menu'] = "pengesahan";
             $data['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();
             $data['noregister'] = $this->Model_transaksi->getNoRegDataRevisi($session_data['provinsi'],$session_data['kabupaten'])->result();
             $this->load->view('transaksi/surat_permohonan_upload', $data);
         }
         
+        function list_register_data_perbaikan(){
+            $postData = $this->input->post();
+            $prefixTbl = $this->db->dbprefix;
+
+            $prov = isset($postData['prov']) ? str_replace("%20"," ",$postData['prov']) : '';
+            $kab = isset($postData['kab']) ? str_replace("%20"," ",$postData['kab']) : '';
+            
+            $whereSlc = array();
+            $orderBy = "ID DESC";
+            $result['register'] = $this->Model_transaksi->select_data($prefixTbl.'register_data_ganda_revisi',$whereSlc,$orderBy)->result();
+            $result['provinsi'] = $prov;
+            
+            $this->load->view('transaksi/list_data_register_perbaikan', $result);
+        }
+        
+        function upload_surat_pengesahan($id){
+            if(!$this->session->userdata('logged_in'))
+            {
+                $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
+                $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
+                redirect('login');
+            }
+            $postData = $this->input->post();
+            $prefixTbl = $this->db->dbprefix;            
+
+            $session_data = $this->session->userdata('logged_in');            
+            $result['nama_pengguna'] = $session_data['nama_pengguna'];
+            $result['username'] = $session_data['username'];
+            $result['group_pengguna'] = $session_data['group_pengguna'];
+            $result['provinsi_pengguna'] = $session_data['provinsi'];
+            $result['kabupaten_pengguna'] = $session_data['kabupaten'];
+
+            $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
+            $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
+            $result['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();            
+            $result['menu'] = "pengesahan";
+            
+            $id_register = $id;           
+            $whereSlc = array('ID' => $id_register);
+            $orderBy = "ID DESC";
+            $result['register'] = $this->Model_transaksi->select_data($prefixTbl.'register_data_ganda_revisi',$whereSlc,$orderBy)->result();
+            $result['id'] = $id_register;
+            
+            $this->load->view('transaksi/upload_surat_pengesahan', $result);
+        }
+        
         function submit_upload_surat(){
+            $prefixTbl = $this->db->dbprefix;
             $session_data = $this->session->userdata('logged_in');            
             $nama_pengguna = $session_data['nama_pengguna'];
             $tgl_permohonan = date("Y-m-d");
-            $provinsi = $this->input->post('provinsi');
-            $kab_kota = $this->input->post('kab_kotax');
-            $no_registrasi_revisi = $this->input->post('noregister');
+            $idregister = $this->input->post('id_register');
+                        
+            $whereSlc = array('ID' => $idregister);
+            $orderBy = "ID DESC";
+            $rsRegister = $this->Model_transaksi->select_data($prefixTbl.'register_data_ganda_revisi',$whereSlc,$orderBy)->result();
+            $provinsi = $rsRegister[0]->PROVINSI;
+            $no_registrasi_revisi = $this->input->post('no_register');
             $nm_surat_permohonan = $this->input->post('surat_permohonan');
-            $nm_lampiran_dokumen = $this->input->post('lampiran_dokumen');
-            $dateUpload = date("dmy");
-            
+            $dateUpload = date("dmy_His");
+                                    
             $this->load->library('upload');
             
-            $fileSurat = $dateUpload."_Surat_Permohonan_".$provinsi."_".$kab_kota.".pdf";
+            $fileSurat = $dateUpload."_Surat_Permohonan_".$provinsi.".pdf";
             $config['upload_path'] = './uploads/';
             $config['allowed_types'] = 'pdf';
             $config['file_name'] = $fileSurat;
@@ -381,25 +504,14 @@
             $this->upload->initialize($config);
             $this->upload->do_upload('surat_permohonan');
             $result1 = $this->upload->data();
-            
-            $fileLampiran = $dateUpload."_Lampiran_Data_".$provinsi."_".$kab_kota.".pdf";
-            $config2['upload_path'] = './uploads/';
-            $config2['allowed_types'] = 'pdf';
-            $config2['file_name'] = $fileLampiran;
-            
-            $this->upload->initialize($config2);        
-            $this->upload->do_upload('lampiran_dokumen');
-            $result2 = $this->upload->data();
                         
-            $result = array('surat_permohonan'=>$result1,'lampiran_dokumen'=>$result2);
+            $result = array('surat_permohonan'=>$result1);
             
             $data = array(
                 'tgl_permohonan' => $tgl_permohonan,
                 'nm_pemohon' => $nama_pengguna,
                 'nm_propinsi' => $provinsi,
-                'nm_kabupaten' => $kab_kota,
                 'nm_surat_permohonan' => $result['surat_permohonan']['file_name'],
-                'nm_lampiran_dokumen' => $result['lampiran_dokumen']['file_name'],
                 'status_permohonan' => 'Open',
                 'nm_pengecek' => '',
                 'alasan_tolak' => '',
@@ -415,15 +527,22 @@
             );
         
             $insert = $this->Model_transaksi->submit_unggah_surat($data);
+            $insert_id = $this->db->insert_id();
+            
+            $data_update = array("ID_SURAT_PERMOHONAN" => $insert_id);
+            $where = array("ID" => $idregister);
+            $this->Model_transaksi->update_data($where,$data_update,$prefixTbl.'register_data_ganda_revisi');
+                        
             if($insert > 0){
                 $this->session->set_flashdata('pesan', 'Dokumen Berhasil Terkirim');
             } else {
                 $this->session->set_flashdata('pesan', 'Dokumen Tidak Berhasil Terkirim');
             }
-            redirect('transaksi/upload_surat');
+            redirect('transaksi/upload_surat_pengesahan/'.$idregister);
         }
         
-        function daftar_surat(){
+        //function daftar_surat(){
+        function status_pengesahan(){
             if(!$this->session->userdata('logged_in'))
             {
                 $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
@@ -442,7 +561,7 @@
             $data['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
             $data['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();
             
-            $data['menu'] = "surat_permohonan";
+            $data['menu'] = "pengesahan";
             $data['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();
             $this->load->view('transaksi/surat_permohonan_list', $data);
         }
@@ -474,40 +593,34 @@
             $this->load->view('transaksi/surat_permohonan_list_daftar', $data);
         }
         
-        function approve_surat_permohonan($idsurat,$status){
+        function approve_surat_permohonan($idsurat){
             if(!$this->session->userdata('logged_in'))
             {
                 $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
                 $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
                 redirect('login');
             }
-            
+            $prefixTbl = $this->db->dbprefix;
             $session_data = $this->session->userdata('logged_in');
-            
-            if($status == "NV"){
-                $statusname = "Need Validation";
-            } elseif($status == "NA"){
-                $statusname = "Need Approve";
-            } elseif($status == "A"){
-                $statusname = "Approved";
-            } elseif($status == "RJ"){
-                $statusname = "Rejected";
-            }
+                        
             $tglAcc = date("Y-m-d");
             if($session_data['group_pengguna']=="Dinsos"){
                 $fieldTglAcc = "tgl_acc_dinsos";
                 $fieldAccBy = "acc_dinsos_by";
+                $statusname = "Read by Dinsos";
             } elseif($session_data['group_pengguna']=="Provinsi"){
                 $fieldTglAcc = "tgl_acc_provinsi";
                 $fieldAccBy = "acc_provinsi_by";
+                 $statusname = "Read by Prov";
             } elseif($session_data['group_pengguna']=="PFM"){
                 $fieldTglAcc = "tgl_acc_pfm";
                 $fieldAccBy = "acc_pfm_by";
+                 $statusname = "Read by PFM";
             }
             $data_update = array("status_permohonan" => $statusname,$fieldTglAcc => $tglAcc,$fieldAccBy => $session_data['nama_pengguna']);
             $where = array("id" => $idsurat);
             $this->Model_transaksi->update_data($where,$data_update,$prefixTbl.'surat_permohonan_data_ganda');
-            redirect('transaksi/daftar_surat');
+            //redirect('transaksi/status_pengesahan');
         }
         
         function rubah_status_permohonan($id_surat){
@@ -599,59 +712,57 @@
             $this->load->view('transaksi/list_cek_data_permohonan', $data);
         }
         
-        function download_data($idSurat,$keterangan){ 
-            $where = array(
-                        'id' => $idSurat
-                    );
-            $prefixTbl = $this->db->dbprefix;
-            $data_surat = $this->Model_transaksi->showPermohonanById($where,$prefixTbl."surat_permohonan_data_ganda")->result();
-            $nmProp = $data_surat[0]->nm_propinsi;
-            $nmKab = $data_surat[0]->nm_kabupaten;            
-            $where2 = array (
-                        'NMPROP' => $nmProp,
-                        'NMKAB' => $nmKab,
-                        'KET_TAMBAHAN' => $keterangan
-                    );
-            $result = $this->Model_transaksi->showPermohonanById($where2,"data_ganda")->result(); 
-            $ketStatus = $result[0]->KET_TAMBAHAN;
+        function download_data($id){             
+            $result = $this->Model_transaksi->showDataAllPerbaikan($id)->result(); 
+            $idSuratPermohonan = $result[0]->ID_SURAT_PERMOHONAN;
+            $nmProp = $result[0]->PROVINSI;
+            $noRegister = $result[0]->NO_REGISTER;
+            
+            $this->approve_surat_permohonan($idSuratPermohonan);
             
             $pdf = new FPDF('L','mm','Legal');
+                        
             // membuat halaman baru
             $pdf->AddPage();
-            $pdf->SetLeftMargin(5);       
+            $pdf->SetLeftMargin(7);       
             $pdf->SetAutoPageBreak(20, 4);
             // setting jenis font yang akan digunakan
-            $pdf->SetFont('Courier','B',16);
+            $pdf->SetFont('Courier','B',17);
             // mencetak string 
-            $pdf->Cell(330,7,'VALIDASI DATA GANDA PENERIMA BANTUAN (BSP)',0,1,'C');         
+            $pdf->Cell(330,7,'DAFTAR DATA GANDA PERBAIKAN PENERIMA BSP',0,1,'C');         
             $pdf->Cell(10,7,'',0,1);
             $pdf->SetFont('Courier','B',12);
-            $pdf->Cell(110,7,'PROPINSI: '.$nmProp,0,0,'C');         
-            $pdf->Cell(110,7,'KABUPATEN: '.$nmKab,0,0,'C');         
-            $pdf->Cell(110,7,'KET STATUS: '.$ketStatus,0,0,'C');         
+            $pdf->Cell(150,7,'PROVINSI: '.$nmProp,0,0,'C');         
+            $pdf->Cell(150,7,'NO.REGISTER: '.$noRegister,0,0,'C');         
             // Memberikan space kebawah agar tidak terlalu rapat
             $pdf->Cell(10,7,'',0,1);            
             
             $pdf->SetFont('Helvetica','B',11);
-            $pdf->Cell(36,8,'NO KARTU',1,0,'C');
-            $pdf->Cell(36,8,'NIK KTP',1,0,'C');
-            $pdf->Cell(36,8,'NO KK',1,0,'C');
+            $pdf->Cell(30,8,'KETERANGAN',1,0,'C');
+            $pdf->Cell(35,8,'NO KARTU',1,0,'C');
+            $pdf->Cell(35,8,'NIK KTP',1,0,'C');
+            $pdf->Cell(35,8,'NO KK',1,0,'C');
+            $pdf->Cell(40,8,'ID KELUARGA',1,0,'C');
             $pdf->Cell(40,8,'IDARTBDT',1,0,'C');
-            $pdf->Cell(83,8,'NAMA PENERIMA',1,0,'C');            
-            $pdf->Cell(55,8,'KECAMATAN',1,0,'C');
-            $pdf->Cell(55,8,'KELURAHAN',1,1,'C');
+            $pdf->Cell(65,8,'NAMA PENERIMA',1,0,'C');            
+            $pdf->Cell(30,8,'STATUS AWAL',1,0,'C');
+            $pdf->Cell(30,8,'STATUS BARU',1,1,'C');
             
             $pdf->SetFont('Helvetica','',10);                                   
             foreach ($result as $row){
-                $pdf->Cell(36,7,$row->NOMOR_KARTU,1,0,'C');
-                $pdf->Cell(36,7,$row->NIK_KTP,1,0,'C');
-                $pdf->Cell(36,7,$row->NOKK_DTKS,1,0,'C');
+                $pdf->Cell(30,7,$row->label,1,0,'C');
+                $pdf->Cell(35,7,$row->NOMOR_KARTU,1,0,'C');
+                $pdf->Cell(35,7,$row->NIK_KTP,1,0,'C');
+                $pdf->Cell(35,7,$row->NOKK_DTKS,1,0,'C');
+                $pdf->Cell(40,7,$row->IDKELUARGA,1,0,'C');
                 $pdf->Cell(40,7,$row->IDARTBDT,1,0,'C');
-                $pdf->Cell(83,7,$row->NAMA_PENERIMA,1,0,'L');  
-                $pdf->Cell(55,7,$row->NMKEC,1,0,'C'); 
-                $pdf->Cell(55,7,$row->NMKEL,1,1,'C'); 
+                $pdf->Cell(65,7,$row->NAMA_PENERIMA,1,0,'L');  
+                $pdf->Cell(30,7,$row->KET_TAMBAHAN,1,0,'C'); 
+                $pdf->Cell(30,7,$row->STATUS_BARU,1,1,'C'); 
             }
-            $pdf->Output();
+            
+            $fileName = 'Daftar_Data_Ganda_Perbaikan_' . $nmProp . '.pdf';
+            $pdf->Output($fileName, 'I');
         }                
         
         function exportCSV($prov,$kab,$kec,$kel,$ket_tambahan,$nik,$nama){
@@ -737,19 +848,20 @@
             exit;
         }                
         
-        function exportExcel($prov,$kab,$kec,$kel,$ket_tambahan,$nik,$nama,$idupload="",$type="A"){
+        function exportExcel($prov,$kab,$kec,$order,$ket_tambahan,$nik,$nama,$idupload="",$type=""){
             //get parameter            
+            $tipe = ($type!="") ? $type : "A";
             $prov = ($prov!="")?str_replace("%20", " ", $prov):"";
             $kab = ($kab!="0")?str_replace("%20", " ", $kab):"";
             $kec = ($kec!="0")?str_replace("%20", " ", $kec):"";
-            $kel = ($kel!="0")?str_replace("%20", " ", $kel):"";
+            $order = ($order!="0")?str_replace("%20", " ", $order):"";
             $ket_tambahan = ($ket_tambahan!="0")?$ket_tambahan:"";
-            $nik = ($nik!="0")?$nik:"";
-            $nama = ($nama!="0")?$nama:"";
+            $nik = "";
+            $nama = "";
 
             $provName = str_replace(" ", "_", $prov);
             $kabName = ($kab!="0") ? str_replace(" ", "_", $kab) : "All";            
-            
+                        
             // Load plugin PHPExcel nya
             include APPPATH.'third_party/PHPExcel/PHPExcel.php';
 
@@ -757,12 +869,12 @@
             $excel = new PHPExcel();
 
             // Settingan awal fil excel
-            $excel->getProperties()->setCreator('My Notes Code')
-            ->setLastModifiedBy('My Notes Code')
-            ->setTitle("Data Siswa")
-            ->setSubject("Siswa")
-            ->setDescription("Laporan Semua Data Siswa")
-            ->setKeywords("Data Siswa");
+            $excel->getProperties()->setCreator('SIAP-BSP')
+            ->setLastModifiedBy('SIAP-BSP')
+            ->setTitle("Data Penerima BSP")
+            ->setSubject("Penerima BSP")
+            ->setDescription("Laporan Data Penerima BSP")
+            ->setKeywords("Data Penerima BSP");
 
             // Buat sebuah variabel untuk menampung pengaturan style dari header tabel
             $style_col = array(
@@ -830,8 +942,7 @@
             $excel->setActiveSheetIndex(0)->setCellValue('AI1', 'STAGANDA');
             $excel->setActiveSheetIndex(0)->setCellValue('AJ1', 'IDKELUARGA');
             $excel->setActiveSheetIndex(0)->setCellValue('AK1', 'KET_TAMBAHAN');
-            $excel->setActiveSheetIndex(0)->setCellValue('AL1', 'NOREKENING');
-            $excel->setActiveSheetIndex(0)->setCellValue('AM1', 'STATUS_BARU');
+            $excel->setActiveSheetIndex(0)->setCellValue('AL1', 'STATUS_BARU');
 
 
             // Apply style header yang telah kita buat tadi ke masing-masing kolom header
@@ -873,13 +984,14 @@
             $excel->getActiveSheet()->getStyle('AJ1')->applyFromArray($style_col);
             $excel->getActiveSheet()->getStyle('AK1')->applyFromArray($style_col);
             $excel->getActiveSheet()->getStyle('AL1')->applyFromArray($style_col);            
-            $excel->getActiveSheet()->getStyle('AM1')->applyFromArray($style_col);            
             
             // get data
-            if($type=="B"){
-                $myData = $this->Model_transaksi->showDataRevisi($idupload,$prov,$kab)->result();
+            if($tipe=="A"){
+                $myData = $this->Model_transaksi->showData($prov,$kab,$kec,$order,$ket_tambahan,$nik,$nama)->result();
+                $nmFile = "Data_Ganda_Keluarga_Penerima_BSP_".$prov."_".$kab."xlsx";                
             } else {
-                $myData = $this->Model_transaksi->showData($prov,$kab,$kec,$kel,$ket_tambahan,$nik,$nama)->result();
+                $myData = $this->Model_transaksi->showDataIdentik($prov,$kab,$kec,$order,$ket_tambahan,$nik,$nama)->result();
+                $nmFile = "Data_Ganda_Identik_Penerima_BSP_".$prov."_".$kab."xlsx";
             }
 
             $suSC = ['V', 'X'];
@@ -922,8 +1034,7 @@
                 $excel->setActiveSheetIndex(0)->setCellValue('AH'.$numrow, $data->STADATA);
                 $excel->setActiveSheetIndex(0)->setCellValue('AI'.$numrow, $data->STAGANDA);
                 $excel->setActiveSheetIndex(0)->setCellValue('AJ'.$numrow, $data->IDKELUARGA);
-                $excel->setActiveSheetIndex(0)->setCellValue('AK'.$numrow, $data->KET_TAMBAHAN);
-                $excel->setActiveSheetIndex(0)->setCellValue('AL'.$numrow, $data->NOREKENING);                                
+                $excel->setActiveSheetIndex(0)->setCellValue('AK'.$numrow, $data->KET_TAMBAHAN);                              
                 
                 $excel->getActiveSheet()->setCellValueExplicit('B'.$numrow,$data->NOMOR_KARTU, PHPExcel_Cell_DataType::TYPE_STRING);
                 $excel->getActiveSheet()->setCellValueExplicit('C'.$numrow,$data->NIK_KTP, PHPExcel_Cell_DataType::TYPE_STRING);
@@ -946,12 +1057,11 @@
                 $excel->getActiveSheet()->setCellValueExplicit('AF'.$numrow,$data->STADATA, PHPExcel_Cell_DataType::TYPE_STRING);
                 $excel->getActiveSheet()->setCellValueExplicit('AG'.$numrow,$data->STAGANDA, PHPExcel_Cell_DataType::TYPE_STRING);
                 $excel->getActiveSheet()->setCellValueExplicit('AJ'.$numrow,$data->IDKELUARGA, PHPExcel_Cell_DataType::TYPE_STRING);
-                $excel->getActiveSheet()->setCellValueExplicit('AL'.$numrow,$data->NOREKENING, PHPExcel_Cell_DataType::TYPE_STRING);
                 
                 if($type=="B"){
-                    $excel->getActiveSheet()->setCellValueExplicit('AM'.$numrow,$data->STATUS_BARU, PHPExcel_Cell_DataType::TYPE_STRING);
+                    $excel->getActiveSheet()->setCellValueExplicit('AL'.$numrow,$data->STATUS_BARU, PHPExcel_Cell_DataType::TYPE_STRING);
                 } else {
-                    $objValidation = $excel->getActiveSheet()->getCell("AM".$numrow)->getDataValidation();
+                    $objValidation = $excel->getActiveSheet()->getCell("AL".$numrow)->getDataValidation();
                     $objValidation->setType(PHPExcel_Cell_DataValidation::TYPE_LIST);
                     $objValidation->setErrorStyle(PHPExcel_Cell_DataValidation::STYLE_STOP);
                     $objValidation->setAllowBlank(false);
@@ -1005,52 +1115,50 @@
                 $excel->getActiveSheet()->getStyle('AJ'.$numrow)->applyFromArray($style_row);
                 $excel->getActiveSheet()->getStyle('AK'.$numrow)->applyFromArray($style_row);
                 $excel->getActiveSheet()->getStyle('AL'.$numrow)->applyFromArray($style_row);
-                $excel->getActiveSheet()->getStyle('AM'.$numrow)->applyFromArray($style_row);
 
                 $no++; // Tambah 1 setiap kali looping
                 $numrow++; // Tambah 1 setiap kali looping
             }
 
             // Set width kolom
-            $excel->getActiveSheet()->getColumnDimension('A')->setWidth(20); // Set width kolom A
-            $excel->getActiveSheet()->getColumnDimension('B')->setWidth(20); // Set width kolom B
-            $excel->getActiveSheet()->getColumnDimension('C')->setWidth(20); // Set width kolom C
-            $excel->getActiveSheet()->getColumnDimension('D')->setWidth(20); // Set width kolom D
-            $excel->getActiveSheet()->getColumnDimension('E')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('F')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('G')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('H')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('I')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('J')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('K')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('L')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('M')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('N')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('O')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('P')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('Q')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('R')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('S')->setWidth(45); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('T')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('U')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('V')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('W')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('X')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('Y')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('Z')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AA')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AB')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AC')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AD')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AE')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AF')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AG')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AH')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AI')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AJ')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AK')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AL')->setWidth(20); // Set width kolom E
-            $excel->getActiveSheet()->getColumnDimension('AM')->setWidth(20); // Set width kolom E
+            $excel->getActiveSheet()->getColumnDimension('A')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('B')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('C')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('D')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('E')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('F')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('G')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('I')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('J')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('K')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('L')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('M')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('N')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('O')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('P')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('Q')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('R')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('S')->setWidth(45);
+            $excel->getActiveSheet()->getColumnDimension('T')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('U')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('V')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('W')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('X')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('Y')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('Z')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('AA')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('AB')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('AC')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('AD')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('AE')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('AF')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('AG')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('AH')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('AI')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('AJ')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('AK')->setWidth(20);
+            $excel->getActiveSheet()->getColumnDimension('AL')->setWidth(20);
 
             // Set height semua kolom menjadi auto (mengikuti height isi dari kolommnya, jadi otomatis)
             $excel->getActiveSheet()->getDefaultRowDimension()->setRowHeight(-1);
@@ -1064,7 +1172,7 @@
 
             // Proses file excel
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-            header('Content-Disposition: attachment; filename="Data_Ganda_Penerima_Bantuan_BSP_'.$prov.'_'.$kab.'.xlsx"'); // Set nama file excel nya
+            header('Content-Disposition: attachment; filename='.$nmFile); // Set nama file excel nya
             header('Cache-Control: max-age=0');
 
             $write = PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
@@ -1170,7 +1278,7 @@
             );
             $prefixTbl = $this->db->dbprefix;
             $insertUploadFile = $this->Model_transaksi->insert_data($prefixTbl.'upload_data_ganda_revisi',$insertUpload);
-            $insert_id_upload = $this->db->insert_id();            
+            $insert_id_upload = $this->db->insert_id();
 
             $filename = "data_perbaikan";
             $namaFile = $tglFile."_Data_Perbaikan_".$nmProv."_".$nmKab.".xlsx";
@@ -1452,6 +1560,123 @@
                 $this->session->set_flashdata('pesan', 'Dokumen Tidak Berhasil Terkirim');
             }
             redirect('transaksi/upload_surat');
+        }
+        
+        function buat_pengesahan(){
+            if(!$this->session->userdata('logged_in'))
+            {
+                $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
+                $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
+                redirect('login');
+            }
+                        
+            $session_data = $this->session->userdata('logged_in');            
+            $result['nama_pengguna'] = $session_data['nama_pengguna'];
+            $result['username'] = $session_data['username'];
+            $result['group_pengguna'] = $session_data['group_pengguna'];
+            $result['provinsi_pengguna'] = $session_data['provinsi'];
+            $result['kabupaten_pengguna'] = $session_data['kabupaten'];
+            
+            $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
+            $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
+            $result['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();
+            
+            $result['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();
+            $result['menu'] = "pengesahan";
+            
+            $this->load->view('transaksi/buat_surat_permohonan', $result);
+        }
+        
+        function list_data_perbaikan(){
+            $postData = $this->input->post();
+            $prefixTbl = $this->db->dbprefix;
+
+            $prov = isset($postData['prov']) ? str_replace("%20"," ",$postData['prov']) : '';
+            $kab = isset($postData['kab']) ? str_replace("%20"," ",$postData['kab']) : '';
+            
+            $result['data'] = $this->Model_transaksi->showDataPerbaikan($prov,$kab)->result();      
+            $result['provinsi'] = $prov;
+            $result['kabupaten'] = $kab;
+            $this->load->view('transaksi/data_ganda_list_perbaikan', $result);
+        }
+        
+        function register_pengesahan(){
+            $session_data = $this->session->userdata('logged_in');            
+            
+            $postData = $this->input->post();
+            $prefixTbl = $this->db->dbprefix;
+            $labelSelect = $postData['revisi'];
+            $userUpload = $session_data['nama_pengguna'];
+            $nowDate = date("Y-m-d H:i:s");
+            $tglFile = date("dmy")."_".date("His");
+            $prov = isset($postData['provinsi'])?str_replace("%20"," ",$postData['provinsi']):'';
+            $kab = isset($postData['kabupaten'])?str_replace("%20"," ",$postData['kabupaten']):'';
+            $jml_clean = isset($postData['jmlclean'])?$postData['jmlclean']:0;
+            $jml_unclean = isset($postData['jmlunclean'])?$postData['jmlunclean']:0;
+            $jml_nonaktif = isset($postData['jmlnonaktif'])?$postData['jmlnonaktif']:0;
+            $jml_total = isset($postData['jmltotal'])?$postData['jmltotal']:0;
+            $nmProv = str_replace(" ", "_", $prov);
+            $nmKab = str_replace(" ", "_", $kab);
+            $noRegister = "REV_DATA_".$nmProv."_".$tglFile;
+            
+            $insertUpload = array(
+                'TGL_UPLOAD' => $nowDate,
+                'PROVINSI' => $prov,
+                'KABUPATEN' => $kab,
+                'FILE_UPLOAD' => '',
+                'USER_UPLOAD' => $userUpload,
+                'NO_REGISTER' => $noRegister,
+                'JML_CLEAN' => $jml_clean,
+                'JML_UNCLEAN' => $jml_unclean,
+                'JML_NONAKTIF' => $jml_nonaktif,
+                'JML_TOTAL' => $jml_total,
+            );
+            
+            $insertUploadFile = $this->Model_transaksi->insert_data($prefixTbl.'register_data_ganda_revisi',$insertUpload);
+            $insert_id_upload = $this->db->insert_id();   
+            
+            $whereSlc = array(
+                'ID' => $insert_id_upload
+            );
+            $orderBy = 'ID DESC';
+            $select = $this->Model_transaksi->select_data($prefixTbl.'register_data_ganda_revisi',$whereSlc,$orderBy)->result();            
+            $no_register = $select[0]->NO_REGISTER;
+            
+            if($insert_id_upload > 0){
+                for($a=0;$a<2;$a++){
+                    $lblSlc = $labelSelect[$a];
+                    $tableName = ($lblSlc=="Ganda Keluarga") ? $prefixTbl."data_ganda_revisi" : $prefixTbl."data_ganda_revisi_identik";
+
+                    $data = array(
+                        'ID_UPLOAD' => $insert_id_upload,
+                        'STATUS_DATA' => 'Registered'
+                    );
+
+                    $where = array(
+                        'NMPROP' => $prov,
+                        'STATUS_BARU' => 'CLEAN',
+                        'ID_UPLOAD' => '',
+                        'STATUS_DATA' => ''
+                    );
+
+                    $where2 = array(
+                        'NMPROP' => $prov,
+                        'STATUS_BARU' => 'NONAKTIF',
+                        'ID_UPLOAD' => '',
+                        'STATUS_DATA' => ''
+                    );
+
+                    $this->Model_transaksi->update_data($where,$data,$tableName);                
+                    $this->Model_transaksi->update_data($where2,$data,$tableName);                                
+                }
+            }
+            
+            if($insert_id_upload > 0){
+                $this->session->set_flashdata('pesan', 'Dokumen Berhasil di Registrasi.<br>No. Registrasi: <b>'.$no_register.'</b>');
+            } else {
+                $this->session->set_flashdata('pesan', 'Dokumen Tidak Berhasil di Registrasi');
+            }
+            redirect('transaksi/buat_pengesahan');
         }
     }
     

@@ -25,9 +25,11 @@
                                 <div class="col-lg-6">
                                     <div class="p-4">
                                         <form class="user" name="frmRekapDataGanda" method="post" target="_blank" action="<?php echo base_url();?>laporan/export_pdf">
+                                            <input type="hidden" name="tipe" id="tipe" value="<?php echo $tipe;?>">
+                                            <input type="hidden" name="label" id="label" value="<?php echo $label;?>">
                                             <div class="form-group">
                                                 <label>Provinsi</label>
-                                                <select name="provinsi" id="provinsi" class="form-control select1" onchange="list_of_kab()">  
+                                                <select name="provinsi" id="provinsi" class="form-control form-control-sm select1" onchange="list_of_kab()">  
                                                     <option></option>
                                                     <?php
                                                         foreach($provinsi as $prov){
@@ -43,28 +45,15 @@
                                                 <input type="hidden" name="kab_kotax" id="kab_kotax" value="">
                                                 <div id="list_kab">--Pilih Kabupaten/Kota--</div>                                               
                                             </div>
-                                            <!--<div class="form-group">
-                                                <label>Kecamatan</label>
-                                                <input type="hidden" name="kecamatanx" id="kecamatanx" value="">
-                                                <div id="list_kec">--Pilih Kecamatan--</div>
+                                            <div class="form-group">
+                                                <label>Tipe Data Ganda</label>      
+                                                <select name="tipeData" id="tipeData" class="form-control form-control-sm">
+                                                    <option value="A">-- Data Ganda Awal --</option>
+                                                    <option value="B">-- Data Ganda Perbaikan --</option>
+                                                </select>
                                             </div>
                                             <div class="form-group">
-                                                <label>Kelurahan</label>
-                                                <input type="hidden" name="kel_desax" id="kel_desax" value="">
-                                                <div id="list_kel">--Pilih Kelurahan--</div>
-                                            </div>-->
-                                            <div class="form-group">
-                                                <label>Keterangan</label>
-                                                <select name="ket_tambahan" id="ket_tambahan" class="form-control">
-                                                    <option value="">--Semua Keterangan--</option>
-                                                    <option value="CLEAN">CLEAN</option>
-                                                    <option value="UNCLEAN">UNCLEAN</option>
-                                                    <option value="NONAKTIF">NON AKTIF</option>
-                                                </select>
-                                            </div>                                            
-                                            <div class="form-group">
-                                                <input type="button" value="Cari Data" name="btn_submit" id="btn_submit" onclick="cari()" class="btn btn-primary btn-default">
-                                                <input type="submit" value="Cetak Data" name="btn_cetak" id="btn_cetak" class="btn btn-default btn-danger">                                                
+                                                <input type="button" value="Lihat Data" name="btn_submit" id="btn_submit" onclick="cari()" class="btn btn-primary btn-sm">                                                
                                             </div>
                                             <hr>                    
                                         </form>
@@ -87,10 +76,10 @@
     <?php $this->load->view("_partials/js.php") ?>
     
     <script>                
-        //$("#list_data_ganda").load("<?php echo base_url()?>transaksi/list_data");
-
         function list_of_kab(){
             var prov = document.getElementById('provinsi').value;                        
+            var tipe = "A";
+            var menu = "rpt_ganda_keluarga";
             var url = "<?php echo base_url()?>transaksi/list_of_kab";
 
             $.ajax({
@@ -106,60 +95,26 @@
             });            
         }
 
-        function list_of_kec(){
-            var kab = document.getElementById('kab_kota').value;
-            document.getElementById('kab_kotax').value = kab;
-            var url = "<?php echo base_url()?>transaksi/list_of_kec";
-
-            $.ajax({
-                type:"POST",
-                data:{kab:kab},
-                url:url,
-                success:function(data){ 
-                     if(data){
-                     $('#list_kec').html(data); 
-                     }
-                }   
-
-            });
-        }
-
-        function list_of_kel(){
-            var kec = document.getElementById('kecamatan').value;
-            document.getElementById('kecamatanx').value = kec;
-            var url = "<?php echo base_url()?>transaksi/list_of_kel";
-
-            $.ajax({
-                type:"POST",
-                data:{kec:kec},
-                url:url,
-                success:function(data){ 
-                     if(data){
-                     $('#list_kel').html(data); 
-                     }
-                }   
-
-            });
-        }
-        
-        function getKelurahan(){
-            var kel = document.getElementById('kel_desa').value;
-            document.getElementById('kel_desax').value = kel;
-        }
-
         function cari(){
             var prov = document.getElementById('provinsi').value;
-            var kab = document.getElementById('kab_kotax').value;
-            //var kec = document.getElementById('kecamatanx').value;
-            //var kel = document.getElementById('kel_desax').value;
-            var ket = document.getElementById('ket_tambahan').value;
-            //var nik = document.getElementById('nik').value;
-            //var nama = document.getElementById('nama').value;            
-            var url = "<?php echo base_url()?>laporan/list_data";                        
+            var kab = document.getElementById('kab_kotax').value;  
+            var ket = "";
+            var tipe = document.getElementById('tipeData').value;
+            var label = document.getElementById('label').value;
+            if(prov==''){
+                alert('Pilih Provinsi Lebih Dulu.');
+                return false;
+            }
+            document.getElementById('btn_submit').disabled=true;            
+            var kabVal = (kab=="") ? "0" : kab;
             
-            $.ajax({
+            var url = "<?php echo base_url()?>laporan/export_pdf/"+tipe+"/"+label+"/"+prov+"/"+kabVal;                        
+            window.open(url,'_blank');
+            document.getElementById('btn_submit').disabled=false;
+            
+            /*$.ajax({
                 type:"POST",
-                data:{prov:prov,kab:kab,ket:ket},
+                data:{prov:prov,kab:kab,ket:ket,tipe:tipe,label:label},
                 url:url,
                 success:function(data){ 
                     if(data){
@@ -167,7 +122,7 @@
                     }
                 }   
 
-            }); 
+            });*/ 
         }                
     </script>
 </body>

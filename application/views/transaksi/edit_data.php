@@ -17,7 +17,10 @@
                 <div class="container-fluid">
                     <div class="card shadow mb-4">
                         <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary">Filter Data Ganda Penerima Bansos Pangan</h6>
+                            <?php
+                                $titleTipe = ($tipe_data=="KEL") ? "Keluarga" : "Identik";
+                            ?>
+                            <h6 class="m-0 font-weight-bold text-primary">Filter Data Ganda <?php echo $titleTipe;?> Penerima Bansos Pangan</h6>
                         </div>
                         
                         <div class="card-body p-4" style="margin-top:-35px">
@@ -27,68 +30,50 @@
                                         <form class="user" name="frmEditDataGanda" method="post" action="<?php echo base_url().'transaksi/update'; ?>">
                                             <input type="hidden" name="tipe_data" id="tipe_data" value="<?php echo $tipe_data;?>">
                                             <div class="form-group">
+                                                <label>NIK KTP</label>
+                                                <input type="text" class="form-control form-control-sm" name="nik_ktp" id="nik_ktp" value="<?php echo $user[0]->NIK_KTP;?>">
+                                            </div>
+                                            <div class="form-group">
                                                 <label>Nama Penerima</label>
                                                 <input type="text" class="form-control form-control-sm" name="nm_penerima" id="nm_penerima" value="<?php echo $user[0]->NAMA_PENERIMA;?>">
                                             </div>
                                             <div class="form-group">
                                                 <label>Nomor Kartu</label>
-                                                <input type="text" class="form-control form-control-sm" name="no_kartu" id="no_kartu" value="<?php echo $user[0]->NOMOR_KARTU;?>">
+                                                <input type="text" class="form-control form-control-sm" name="no_kartu" id="no_kartu" value="<?php echo $user[0]->NOMOR_KARTU;?>" readonly>
+                                            </div>                                            
+                                            <div class="form-group">
+                                                <label>NO KK</label>
+                                                <input type="text" class="form-control form-control-sm" name="no_kk" id="no_kk" value="<?php echo $user[0]->NOKK_DTKS;?>" readonly>
                                             </div>
                                             <div class="form-group">
-                                                <label>NIK KTP</label>
-                                                <input type="text" class="form-control form-control-sm" name="nik_ktp" id="nik_ktp" value="<?php echo $user[0]->NIK_KTP;?>">
+                                                <label>ID Keluarga</label>
+                                                <input type="text" class="form-control form-control-sm" id="idkeluarga" name="idkeluarga" value="<?php echo $user[0]->IDKELUARGA;?>" readonly>
                                             </div>
                                             <div class="form-group">
+                                                <label>ID ART BDT</label>
+                                                <input type="text" class="form-control form-control-sm" id="idartbdt" name="idartbdt" value="<?php echo $user[0]->IDARTBDT;?>" readonly>
+                                            </div>
+                                            <!--<div class="form-group">
                                                 <label>ID Pengurus</label>
                                                 <input type="text" class="form-control form-control-sm" name="id_pengurus" id="id_pengurus" value="<?php echo $user[0]->ID_PENGURUS;?>">
-                                            </div>
+                                            </div>-->
                                             <div class="form-group">
                                                 <label>Alamat</label>
-                                                <textarea class="form-control form-control-sm" name="alamat" id="alamat"><?php echo $user[0]->ALAMAT;?></textarea>
+                                                <textarea class="form-control form-control-sm" name="alamat" id="alamat" readonly><?php echo $user[0]->ALAMAT;?></textarea>
                                             </div>
                                             <div class="form-group">
                                                 <label>Provinsi</label>
-                                                <select name="provinsi" id="provinsi" class="form-control form-control-sm select1" onchange="list_of_kab()">  
-                                                    <option></option>
-                                                    <?php
-                                                        foreach($provinsi as $prov){
-                                                            $selected = ($prov->NMPROVINSI==$user[0]->NMPROP) ? "selected" : "";
-                                                    ?>
-                                                    <option value="<?php echo $prov->NMPROVINSI;?>" <?php echo $selected;?>><?php echo $prov->NMPROVINSI;?></option>
-                                                    <?php
-                                                        }
-                                                    ?>
-                                                </select>
+                                                <input type="text" class="form-control form-control-sm" name="provinsi" id="provinsi" value="<?php echo $user[0]->NMPROP;?>" readonly>                                                
                                             </div>
                                             <div class="form-group">
-                                                <label>Kabupaten/Kota</label>      
-                                                <select name="kab_kota" id="kab_kota" class="form-control form-control-sm select2" onchange="list_of_kec()">
-                                                    <option></option>
-                                                    <?php
-                                                        foreach($kab_kota as $kab){
-                                                            $selected = ($kab->NMKABKOTA==$user[0]->NMKAB) ? "selected" : "";
-                                                    ?>
-                                                    <option value="<?php echo $kab->NMKABKOTA;?>" <?php echo $selected;?>><?php echo $kab->NMKABKOTA;?></option>
-                                                    <?php
-                                                        }
-                                                    ?>
-                                                </select>
+                                                <label>Kabupaten/Kota</label>     
+                                                <input type="text" class="form-control form-control-sm" name="kab_kota" id="kab_kota" value="<?php echo $user[0]->NMKAB;?>" readonly>                                                
                                             </div>
                                             <div class="form-group">
                                                 <label>Kecamatan</label>
-                                                <select name="kecamatan" id="kecamatan" class="form-control form-control-sm select3" onchange="list_of_kel()">
-                                                    <option></option>
-                                                    <?php
-                                                       foreach($kecamatan as $kec){
-                                                           $selected = ($kec->NMKECAMATAN == $user[0]->NMKEC) ? "selected" : "";
-                                                    ?>
-                                                    <option value="<?php echo $kec->NMKECAMATAN;?>" <?php echo $selected;?>><?php echo $kec->NMKECAMATAN;?></option>
-                                                    <?php
-                                                        }
-                                                    ?>
-                                                </select>
+                                                <input type="text" class="form-control form-control-sm" name="kecamatan" id="kecamatan" value="<?php echo $user[0]->NMKEC;?>" readonly>
                                             </div>
-                                            <div class="form-group">
+                                            <!--<div class="form-group">
                                                 <label>Kelurahan</label>
                                                 <select name="kel_desa" id="kel_desa" class="form-control form-control-sm select4" onchange="getKelurahan()">
                                                     <option></option>
@@ -105,31 +90,33 @@
                                             <div class="form-group">
                                                 <label>ID BDT</label>
                                                 <input type="text" class="form-control form-control-sm" id="idbdt" name="idbdt" value="<?php echo $user[0]->IDBDT;?>">
-                                            </div>
-                                            <div class="form-group">
-                                                <label>ID ART BDT</label>
-                                                <input type="text" class="form-control form-control-sm" id="idartbdt" name="idartbdt" value="<?php echo $user[0]->IDARTBDT;?>">
-                                            </div>
-                                            <div class="form-group">
+                                            </div>-->                                            
+                                            <!--<div class="form-group">
                                                 <label>Nama DTKS</label>
                                                 <input type="text" class="form-control form-control-sm" id="nmdtks" name="nmdtks" value="<?php echo $user[0]->NAMA_DTKS;?>">
-                                            </div>
-                                            <div class="form-group">
-                                                <label>ID Keluarga</label>
-                                                <input type="text" class="form-control form-control-sm" id="idkeluarga" name="idkeluarga" value="<?php echo $user[0]->IDKELUARGA;?>">
-                                            </div>
-                                            
+                                            </div>-->                                                                                        
                                             <div class="form-group">
                                                 <label>Keterangan Tambahan</label>
-                                                <select name="ket_tambahan" id="ket_tambahan" class="form-control form-control-sm select4">
+                                                <input type="text" class="form-control form-control-sm" name="ket_tambahan" id="ket_tambahan" value="<?php echo ($user[0]->STATUS_BARU!="") ? $user[0]->STATUS_BARU : $user[0]->KET_TAMBAHAN;?>" readonly>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Status Baru</label>
+                                                <select name="status_baru" id="status_baru" required class="form-control form-control-sm select4">
                                                     <option></option>                                                    
-                                                    <option value="CLEAN" <?php if($user[0]->KET_TAMBAHAN=='CLEAN') echo "selected";?>>CLEAN</option>
-                                                    <option value="UNCLEAN" <?php if($user[0]->KET_TAMBAHAN=='UNCLEAN') echo "selected";?>>UNCLEAN</option>
-                                                    <option value="NONAKTIF" <?php if($user[0]->KET_TAMBAHAN=='NONAKTIF') echo "selected";?>>NON AKTIF</option>                                                    
+                                                    <option value="CLEAN" <?php if($user[0]->STATUS_BARU=="CLEAN") echo "selected";?>>CLEAN</option>
+                                                    <option value="UNCLEAN" <?php if($user[0]->STATUS_BARU=="UNCLEAN") echo "selected";?>>UNCLEAN</option>
+                                                    <option value="NONAKTIF" <?php if($user[0]->STATUS_BARU=="NONAKTIF") echo "selected";?>>NON AKTIF</option>
                                                 </select>
                                             </div>
+                                            <?php
+                                                if($tipe_data=="KEL"){
+                                                    $page = "transaksi";
+                                                } elseif($tipe_data=="IDT"){
+                                                    $page = "transaksi/ganda_identik";
+                                                }
+                                            ?>
                                             <div class="form-group">                                                
-                                                <a href="<?php echo base_url().'transaksi';?>" class="btn btn-sm btn-secondary btn-icon-split">
+                                                <a href="<?php echo base_url().$page;?>" class="btn btn-sm btn-secondary btn-icon-split">
                                                     <span class="icon text-white-50">
                                                       <i class="fas fa-arrow-left"></i>
                                                     </span>

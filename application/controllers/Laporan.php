@@ -13,27 +13,7 @@
         }
         
         function index(){
-            if(!$this->session->userdata('logged_in'))
-            {
-                $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
-                $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
-                redirect('login');
-            }
             
-            $session_data = $this->session->userdata('logged_in');            
-            $result['nama_pengguna'] = $session_data['nama_pengguna'];
-            $result['username'] = $session_data['username'];
-            $result['group_pengguna'] = $session_data['group_pengguna'];
-            $result['provinsi_pengguna'] = $session_data['provinsi'];
-            $result['kabupaten_pengguna'] = $session_data['kabupaten'];
-                        
-            $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
-            $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
-            $result['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();
-                        
-            $result['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();
-            $result['menu'] = "rpt_data_ganda";
-            $this->load->view('laporan/rekap_data_ganda', $result);
         }
         
         function list_of_kab(){
@@ -42,25 +22,102 @@
             $prov = isset($postData['prov'])?$postData['prov']:'';
             $result['kab_kota'] = $this->Model_transaksi->getKabKota($prov)->result();
             $this->load->view('transaksi/v_kab_list', $result);
+        }        
+        
+        function summary_keluarga(){
+            $this->report_summary("A","KEL");
         }
         
-        /*function list_of_kec(){
+        function summary_identik(){
+            $this->report_summary("B","IDT");
+        }
+        
+        function detail_keluarga(){
+            $this->report_detail("A","KEL");
+        }
+        
+        function detail_identik(){
+            $this->report_detail("B","IDT");
+        }
+        
+        function report_summary($tipe,$label){
+            if(!$this->session->userdata('logged_in'))
+            {
+                $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
+                $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
+                redirect('login');
+            }
+                        
+            $prefixTbl = $this->db->dbprefix;
+            $session_data = $this->session->userdata('logged_in');            
+            $result['nama_pengguna'] = $session_data['nama_pengguna'];
+            $result['username'] = $session_data['username'];
+            $result['group_pengguna'] = $session_data['group_pengguna'];
+            $result['provinsi_pengguna'] = $session_data['provinsi'];
+            $result['kabupaten_pengguna'] = $session_data['kabupaten'];            
+            
+            $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
+            $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
+            $result['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();
+            
+            $result['menu'] = ($tipe=='A') ? "rpt_ganda_keluarga" : "rpt_ganda_identik";
+            $result['title'] = ($tipe=='A') ? "Keluarga" : "Identik";
+            $result['tipe'] = $tipe;
+            $result['label'] = $label;
+            $result['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();
+            $this->load->view('laporan/summary_data_ganda', $result);
+        }
+        
+        function report_detail($tipe,$label){
+            if(!$this->session->userdata('logged_in'))
+            {
+                $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
+                $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
+                redirect('login');
+            }
+                        
+            $prefixTbl = $this->db->dbprefix;
+            $session_data = $this->session->userdata('logged_in');            
+            $result['nama_pengguna'] = $session_data['nama_pengguna'];
+            $result['username'] = $session_data['username'];
+            $result['group_pengguna'] = $session_data['group_pengguna'];
+            $result['provinsi_pengguna'] = $session_data['provinsi'];
+            $result['kabupaten_pengguna'] = $session_data['kabupaten'];            
+            
+            $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
+            $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
+            $result['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();
+            
+            $result['menu'] = ($tipe=='A') ? "rpt_ganda_keluarga" : "rpt_ganda_identik";
+            $result['title'] = ($tipe=='A') ? "Keluarga" : "Identik";
+            $result['tipe'] = $tipe;
+            $result['label'] = $label;
+            $result['provinsi'] = $this->Model_transaksi->getProvinsi($session_data['provinsi'])->result();
+            $this->load->view('laporan/rekap_data_ganda', $result);
+        }
+        
+        function list_data_summary(){
             $postData = $this->input->post();
-
+            $tipe = isset($postData['tipe'])?$postData['tipe']:'';
+            $label = isset($postData['label'])?$postData['label']:'';
+            $prov = isset($postData['prov'])?$postData['prov']:'';
             $kab = isset($postData['kab'])?$postData['kab']:'';
-            $result['kecamatan'] = $this->Model_transaksi->getKecamatan($kab)->result();
-            $this->load->view('transaksi/v_kec_list', $result);
+            
+            $this->summary_data($tipe, $label, $prov, $kab);
         }
         
-        function list_of_kel(){
+        function list_data_detail(){
             $postData = $this->input->post();
-
-            $kec = isset($postData['kec'])?$postData['kec']:'';
-            $result['kelurahan'] = $this->Model_transaksi->getKelDesa($kec)->result();
-            $this->load->view('transaksi/v_kel_list', $result);
-        }*/          
+            $tipe = isset($postData['tipe'])?$postData['tipe']:'';
+            $label = isset($postData['label'])?$postData['label']:'';
+            $prov = isset($postData['prov'])?$postData['prov']:'';
+            $kab = isset($postData['kab'])?$postData['kab']:'';
+            
+            $this->detail_data($tipe, $label, $prov, $kab);
+        }
         
-        function summary_data(){
+        function summary_data($tipe,$label,$prov,$kab){
+            $prefixTbl = $this->db->dbprefix;
             if(!$this->session->userdata('logged_in'))
             {
                 $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
@@ -72,80 +129,122 @@
             $result['nama_pengguna'] = $session_data['nama_pengguna'];
             $result['username'] = $session_data['username'];
             $result['group_pengguna'] = $session_data['group_pengguna'];
-            $result['provinsi_pengguna'] = $session_data['provinsi'];
-            $result['kabupaten_pengguna'] = $session_data['kabupaten'];
+            $result['provinsi_pengguna'] = isset($session_data['provinsi']) ? $session_data['provinsi'] : $prov;
+            $result['kabupaten_pengguna'] = isset($session_data['kabupaten']) ? $session_data['kabupaten'] : $kab;
                         
             $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
             $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
             $result['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();
             
+            $tblName1 = ($tipe=='A') ? $prefixTbl.'data_ganda' : $prefixTbl.'data_ganda_identik';
+            $tblName2 = ($tipe=='A') ? $prefixTbl.'data_ganda_revisi' : $prefixTbl.'data_ganda_revisi_identik';
+            
             $result['menu'] = "rpt_data_ganda";
-            $result['data_rekap_prop'] = $this->Model_transaksi->rekap_data_per_provinsi($session_data['provinsi'])->result();
-            $this->load->view('laporan/summary_data_ganda_list', $result);
+            $result['data_rekap'] = $this->Model_transaksi->rekap_data_per_provinsi($tblName1,$tblName2,$result['provinsi_pengguna'],$result['kabupaten_pengguna'])->result();
+            $result['tipe'] = $tipe;
+            $result['label'] = $label;
+            $page = 'summary_data_ganda_list_prov';
+            $this->load->view('laporan/'.$page, $result);
         }
         
-        function list_data(){
-            $postData = $this->input->post();
-
-            $prov = isset($postData['prov'])?$postData['prov']:'';
-            $kab = isset($postData['kab'])?$postData['kab']:'';
-            $kec = isset($postData['kec'])?$postData['kec']:'';
-            $kel = isset($postData['kel'])?$postData['kel']:'';
-            $ket_tambahan = isset($postData['ket'])?$postData['ket']:'';
-            $nik = isset($postData['nik'])?$postData['nik']:'';
-            $nama = isset($postData['nama'])?$postData['nama']:'';
-
-            $result['data'] = $this->Model_transaksi->showData($prov,$kab,$kec,$kel,$ket_tambahan,$nik,$nama)->result();      
+        function detail_data($tipe,$label,$prov,$kab){
+            $prefixTbl = $this->db->dbprefix;
+            if(!$this->session->userdata('logged_in'))
+            {
+                $pemberitahuan = "<div class='alert alert-warning'>Anda harus login dulu </div>";
+                $this->session->set_flashdata('pemberitahuan', $pemberitahuan);
+                redirect('login');
+            }
+            
+            $session_data = $this->session->userdata('logged_in');            
+            $result['nama_pengguna'] = $session_data['nama_pengguna'];
+            $result['username'] = $session_data['username'];
+            $result['group_pengguna'] = $session_data['group_pengguna'];
+            $result['provinsi_pengguna'] = isset($session_data['provinsi']) ? $session_data['provinsi'] : $prov;
+            $result['kabupaten_pengguna'] = isset($session_data['kabupaten']) ? $session_data['kabupaten'] : $kab;
+                        
+            $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
+            $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
+            $result['menu_group_laporan'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Laporan')->result();
+            
+            $tblName1 = ($tipe=='A') ? $prefixTbl.'data_ganda' : $prefixTbl.'data_ganda_identik';
+            $tblName2 = ($tipe=='A') ? $prefixTbl.'data_ganda_revisi' : $prefixTbl.'data_ganda_revisi_identik';
+            
+            $result['menu'] = "rpt_data_ganda";
+            $result['data_rekap'] = $this->Model_transaksi->select_data($tblName,$where,$orderBy)->result();
+            $result['tipe'] = $tipe;
+            $result['label'] = $label;
+            
             $this->load->view('laporan/rekap_data_ganda_list', $result);
         }       
         
-        function export_pdf(){
-            $postData = $this->input->post();
-
-            $prov = isset($postData['provinsi'])?$postData['provinsi']:'';
-            $kab = isset($postData['kab_kotax'])?$postData['kab_kotax']:'';
-            $kec = isset($postData['kecamatanx'])?$postData['kecamatanx']:'';
-            $kel = isset($postData['kel_desax'])?$postData['kel_desax']:'';
-            $ket_tambahan = isset($postData['ket_tambahan'])?$postData['ket_tambahan']:'';
-            $nik = isset($postData['nik'])?$postData['nik']:'';
-            $nama = isset($postData['nama'])?$postData['nama']:'';
-            
+        function export_pdf($tipe,$label,$prov,$kab){
+            $prefixTbl = $this->db->dbprefix;
+            if($tipe=='A' && $label=='KEL'){
+                $tblName = $prefixTbl.'data_ganda';
+                $label = "AWAL KELUARGA";
+            } elseif($tipe=='B' && $label=='KEL'){
+                $tblName = $prefixTbl.'data_ganda_revisi';
+                $label = "PERBAIKAN KELUARGA";
+            } elseif($tipe=='A' && $label=='IDT'){
+                $tblName = $prefixTbl.'data_ganda_identik';
+                $label = "AWAL IDENTIK";
+            } elseif($tipe=='B' && $label=='IDT'){
+                $tblName = $prefixTbl.'data_ganda_revisi_identik';
+                $label = "PERBAIKAN IDENTIK";
+            }                                    
+            $nmProp = str_replace("%20", " ", $prov);
+            $where = ($tipe=='A') ? "NMPROP='$nmProp'" : "STATUS_BARU<>''";
+            $orderBy = "IDKELUARGA ASC";
+            $result = $this->Model_transaksi->select_data($tblName,$where,$orderBy)->result();            
+                        
             $pdf = new FPDF('L','mm','Legal');
+                        
             // membuat halaman baru
             $pdf->AddPage();
-            $pdf->SetLeftMargin(5);       
+            $pdf->SetLeftMargin(7);       
             $pdf->SetAutoPageBreak(20, 4);
             // setting jenis font yang akan digunakan
-            $pdf->SetFont('Arial','B',16);
+            $pdf->SetFont('Courier','B',17);
             // mencetak string 
-            $pdf->Cell(330,7,'DATA GANDA PENDUDUK',0,1,'C');         
+            $pdf->Cell(330,7,'DAFTAR DATA GANDA '.$label.' PENERIMA BSP',0,1,'C');         
+            $pdf->Cell(10,7,'',0,1);
+            $pdf->SetFont('Courier','B',12);
+            $pdf->Cell(330,7,'PROVINSI: '.$nmProp,0,0,'C');        
             // Memberikan space kebawah agar tidak terlalu rapat
             $pdf->Cell(10,7,'',0,1);            
             
-            $pdf->SetFont('Arial','B',10);
-            $pdf->Cell(35,8,'NO KARTU',1,0);
-            $pdf->Cell(35,8,'NIK KTP',1,0);
-            $pdf->Cell(63,8,'NAMA PENERIMA',1,0);            
-            $pdf->Cell(45,8,'PROPINSI',1,0);
-            $pdf->Cell(45,8,'KABUPATEN',1,0);
-            $pdf->Cell(45,8,'KECAMATAN',1,0);
-            $pdf->Cell(50,8,'KELURAHAN',1,0);
-            $pdf->Cell(27,8,'KETERANGAN',1,1);
-            $pdf->SetFont('Arial','',10);
-           
-            $result = $this->Model_transaksi->showData($prov,$kab,$kec,$kel,$ket_tambahan,$nik,$nama)->result(); 
+            $pdf->SetFont('Helvetica','B',11);
+            $pdf->Cell(17,8,'NO',1,0,'C');
+            $pdf->Cell(35,8,'NO KARTU',1,0,'C');
+            $pdf->Cell(35,8,'NIK KTP',1,0,'C');
+            $pdf->Cell(35,8,'NO KK',1,0,'C');
+            $pdf->Cell(40,8,'ID KELUARGA',1,0,'C');
+            $pdf->Cell(40,8,'IDARTBDT',1,0,'C');
+            $pdf->Cell(65,8,'NAMA PENERIMA',1,0,'C');            
+            $pdf->Cell(30,8,'STATUS',1,1,'C');
+            
+            $pdf->SetFont('Helvetica','',10);                                   
+            $no=1;
             foreach ($result as $row){
-                $pdf->Cell(35,7,$row->NOMOR_KARTU,1,0);
-                $pdf->Cell(35,7,$row->NIK_KTP,1,0);
-                $pdf->Cell(63,7,$row->NAMA_PENERIMA,1,0);  
-                $pdf->Cell(45,7,$row->NMPROP,1,0); 
-                $pdf->Cell(45,7,$row->NMKAB,1,0); 
-                $pdf->Cell(45,7,$row->NMKEC,1,0); 
-                $pdf->Cell(50,7,$row->NMKEL,1,0); 
-                $pdf->Cell(27,7,$row->KET_TAMBAHAN,1,1); 
+                $pdf->Cell(17,7,$no,1,0,'C');
+                $pdf->Cell(35,7,$row->NOMOR_KARTU,1,0,'C');
+                $pdf->Cell(35,7,$row->NIK_KTP,1,0,'C');
+                $pdf->Cell(35,7,$row->NOKK_DTKS,1,0,'C');
+                $pdf->Cell(40,7,$row->IDKELUARGA,1,0,'C');
+                $pdf->Cell(40,7,$row->IDARTBDT,1,0,'C');
+                $pdf->Cell(65,7,$row->NAMA_PENERIMA,1,0,'L');
+                if($tipe=='A'){
+                    $pdf->Cell(30,7,$row->KET_TAMBAHAN,1,1,'C'); 
+                } elseif($tipe=='B'){
+                    $pdf->Cell(30,7,$row->STATUS_BARU,1,1,'C'); 
+                }
+                $no++;
             }
-            $pdf->Output();
-        }
+                                    
+            $fileName = 'Daftar_Data_Ganda_' . $label . '_' . $nmProp . '.pdf';
+            $pdf->Output($fileName, 'I');
+        }                    
     }
     
 ?>
