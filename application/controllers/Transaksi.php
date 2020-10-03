@@ -33,7 +33,7 @@
             $result['group_pengguna'] = $session_data['group_pengguna'];
             $result['provinsi_pengguna'] = $session_data['provinsi'];
             $result['kabupaten_pengguna'] = $session_data['kabupaten'];
-            $where = "NMPROP='".$session_data['provinsi']."' AND ID_UPLOAD='' AND STATUS_DATA=''";
+            $where = "NMPROP='".$session_data['provinsi']."' ";
             
             $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
             $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
@@ -61,7 +61,7 @@
             $result['group_pengguna'] = $session_data['group_pengguna'];
             $result['provinsi_pengguna'] = $session_data['provinsi'];
             $result['kabupaten_pengguna'] = $session_data['kabupaten'];
-            $where = "NMPROP='".$session_data['provinsi']."' AND ID_UPLOAD='' AND STATUS_DATA=''";
+            $where = "NMPROP='".$session_data['provinsi']."' ";
             
             $result['menu_group_none'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'')->result();
             $result['menu_group_transaksi'] = $this->Model_group_access->showParentMenuGroup($session_data['group_pengguna'],'Transaksi')->result();
