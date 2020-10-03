@@ -611,11 +611,15 @@
             } elseif($session_data['group_pengguna']=="Provinsi"){
                 $fieldTglAcc = "tgl_acc_provinsi";
                 $fieldAccBy = "acc_provinsi_by";
-                 $statusname = "Read by Prov";
+                $statusname = "Read by Prov";
             } elseif($session_data['group_pengguna']=="PFM"){
                 $fieldTglAcc = "tgl_acc_pfm";
                 $fieldAccBy = "acc_pfm_by";
-                 $statusname = "Read by PFM";
+                $statusname = "Read by PFM";
+            } else {
+                $fieldTglAcc = "tgl_permohonan";
+                $fieldAccBy = "nm_pemohon";
+                $statusname = "Open";
             }
             $data_update = array("status_permohonan" => $statusname,$fieldTglAcc => $tglAcc,$fieldAccBy => $session_data['nama_pengguna']);
             $where = array("id" => $idsurat);
