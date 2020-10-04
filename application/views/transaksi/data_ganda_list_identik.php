@@ -69,6 +69,13 @@
                 <?php
                     $i=1;
                     foreach($data as $data_ganda){
+                        $statusBaru = $data_ganda->STATUS_BARU;
+                        $statusLama = $data_ganda->KET_TAMBAHAN;
+                        if($statusBaru!='' || !($statusBaru==NULL)){
+                            $statusBaruX = $statusBaru;
+                        } else {
+                            $statusBaruX = $statusLama;
+                        }
                 ?>
                 <tr>
                     <td><?php echo ucwords(strtolower($data_ganda->NAMA_PENERIMA));?></td>
@@ -79,7 +86,7 @@
                     <td><?php echo $data_ganda->IDARTBDT;?></td>
                     <td><?php echo ucwords(strtolower($data_ganda->NMPROP));?></td>
                     <td><?php echo ucwords(strtolower($data_ganda->NMKAB));?></td>
-                    <td><?php echo ($data_ganda->STATUS_BARU!="") ? ucwords(strtolower($data_ganda->STATUS_BARU)) : ucwords(strtolower($data_ganda->KET_TAMBAHAN));?></td>
+                    <td><?php echo $statusBaruX;?></td>
                     <td>
                         <?php if($data_ganda->STATUS_BARU!="NONAKTIF" && $data_ganda->KET_TAMBAHAN!="NONAKTIF"){ ?>
                         <a href="#<?php echo $data_ganda->NOMOR_KARTU;?>" id="nonaktif<?php echo $data_ganda->NOMOR_KARTU;?>" onclick="updatestatus('<?php echo $data_ganda->NOMOR_KARTU;?>','NONAKTIF','<?php echo $data_ganda->NMPROP;?>','<?php echo $data_ganda->NMKAB;?>')" title="Non Aktif">[X]</a> | 
