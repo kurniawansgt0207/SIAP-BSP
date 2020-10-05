@@ -381,8 +381,15 @@
             $this->view_surat_permohonan($insertID);
         }
         
-        function view_surat_permohonan($idData){            
-            $this->load->view('transaksi/surat_permohonan_view',$idData);
+        function view_surat_permohonan($idData){                      
+           $this->load->view('transaksi/template/Template_Surat_Permohonan_SIAPBSP.docx');
+        }
+        
+        function download_surat_permohonan(){
+            $this->load->helper('download');
+            $name = 'Template_Surat_Permohonan_SIAPBSP.docx';  
+            $data = file_get_contents('transaksi/template/'.$name);  
+            force_download($name,$data);
         }
         
         function download_surat(){

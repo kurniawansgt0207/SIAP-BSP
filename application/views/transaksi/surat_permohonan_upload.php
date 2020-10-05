@@ -43,7 +43,8 @@
                                             </div>
                                             <input type="hidden" name="kab_kotax" id="kab_kotax" value="">                                            
                                             <div class="form-group">                                                
-                                                <input type="button" value="Tampilkan Data" name="btn_tampil" id="btn_tampil" class="btn btn-sm btn-default btn-info" onclick="showData()"> 
+                                                <input type="button" value="Tampilkan Data" name="btn_tampil" id="btn_tampil" class="btn btn-sm btn-info" onclick="showData()"> 
+                                                <input type="button" value="Download Surat" name="btn_tampil" id="btn_tampil" class="btn btn-sm btn-warning" onclick="downloadSurat()">
                                             </div>
                                         </form>
                                     </div>                                    
@@ -118,6 +119,11 @@
             var url = "<?php echo base_url()?>transaksi/download_data/"+id;
             window.open(url,'_blank');
         }       
+        
+        function downloadSurat(){
+            var url = "<?php echo base_url()?>transaksi/download_surat_permohonan/";
+            window.open(url,'_blank');
+        }
     </script>
 </body>
 </html>
