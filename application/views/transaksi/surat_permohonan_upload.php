@@ -44,7 +44,8 @@
                                             <input type="hidden" name="kab_kotax" id="kab_kotax" value="">                                            
                                             <div class="form-group">                                                
                                                 <input type="button" value="Tampilkan Data" name="btn_tampil" id="btn_tampil" class="btn btn-sm btn-info" onclick="showData()"> 
-                                                <input type="button" value="Download Surat" name="btn_tampil" id="btn_tampil" class="btn btn-sm btn-warning" onclick="downloadSurat()">
+                                                <!--<input type="button" value="Download Surat" name="btn_tampil" id="btn_tampil" class="btn btn-sm btn-warning" onclick="downloadSurat()">-->
+                                                <a href="<?php echo base_url().'assets/template_doc/Template_Surat_Permohonan_SIAPBSP.docx';?>" target="_blank" class="btn btn-sm btn-warning">Download Word (.docx)</a>
                                             </div>
                                         </form>
                                     </div>                                    
