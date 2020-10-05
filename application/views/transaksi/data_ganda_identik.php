@@ -179,16 +179,15 @@
             var ket = document.getElementById('ket_tambahan').value;
             var nik = "";
             var nama = "";
-            var url = "<?php echo base_url()?>transaksi/list_data_identik";                        
-            document.getElementById('btn_submit').disabled=true;
+            var url = "<?php echo base_url()?>transaksi/list_data_identik";
+            
             $.ajax({
                 type:"POST",
                 data:{tipe:tipe,prov:prov,kab:kab,kec:kec,order:order,ket:ket,nik:nik,nama:nama},
                 url:url,
                 success:function(data){ 
                     if(data){
-                        $('#list_data_ganda').html(data); 
-                        document.getElementById('btn_submit').disabled=false;
+                        $('#list_data_ganda').html(data);
                     }
                 }   
 
