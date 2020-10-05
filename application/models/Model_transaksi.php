@@ -152,7 +152,7 @@
             $this->db->from($table);
             $this->db->where($where);
             $this->db->order_by($orderby);
-            //$this->db->limit(100,0);
+            $this->db->limit(200,0);
             $query = $this->db->get();
 
             if ($query && $query->num_rows() > 0) {
