@@ -3031,7 +3031,7 @@ class PHPExcel_Calculation
             } else {
                 if ($value == '') {
                     return 'an empty string';
-                } elseif ($value{0} == '#') {
+                } elseif ($value[0] == '#') {
                     return 'a '.$value.' error';
                 } else {
                     $typeString = 'a string';
