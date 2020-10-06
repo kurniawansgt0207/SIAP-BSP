@@ -2777,7 +2777,7 @@ class PHPExcel_Calculation
             return $cellValue;
         }
 
-        if (($wsTitle{0} !== "\x00") && ($this->cyclicReferenceStack->onStack($wsCellReference))) {
+        if (($wsTitle[0] !== "\x00") && ($this->cyclicReferenceStack->onStack($wsCellReference))) {
             if ($this->cyclicFormulaCount <= 0) {
                 $this->cyclicFormulaCell = '';
                 return $this->raiseFormulaError('Cyclic Reference in Formula');
