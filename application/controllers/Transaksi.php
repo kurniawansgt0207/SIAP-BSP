@@ -388,7 +388,7 @@
         function download_surat_permohonan(){
             $this->load->helper('download');
             $name = 'Template_Surat_Permohonan_SIAPBSP.docx';  
-            $data = file_get_contents('transaksi/template/'.$name);  
+            $data = file_get_contents('transaksi/template/Template_Surat_Permohonan_SIAPBSP.docx');  
             force_download($name,$data);
         }
         
@@ -999,10 +999,10 @@
             // get data
             if($tipe=="A"){
                 $myData = $this->Model_transaksi->showData($prov,$kab,$kec,$order,$ket_tambahan,$nik,$nama)->result();
-                $nmFile = "Data_Ganda_Keluarga_Penerima_BSP_".$prov."_".$kab."xlsx";                
+                $nmFile = "Data_Ganda_Keluarga_Penerima_BSP_".$prov."_".$kab.".xlsx";                
             } else {
                 $myData = $this->Model_transaksi->showDataIdentik($prov,$kab,$kec,$order,$ket_tambahan,$nik,$nama)->result();
-                $nmFile = "Data_Ganda_Identik_Penerima_BSP_".$prov."_".$kab."xlsx";
+                $nmFile = "Data_Ganda_Identik_Penerima_BSP_".$prov."_".$kab.".xlsx";
             }
 
             $suSC = ['V', 'X'];
